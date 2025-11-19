@@ -140,8 +140,16 @@ jobs:
 
       - name: 开始编译固件
         id: compile
+        env:
+          TMPDIR: /workdir/openwrt/tmp
+          TMP: /workdir/openwrt/tmp
+          TEMP: /workdir/openwrt/tmp
         run: |
           cd openwrt
+          # 确保临时目录存在且有足够空间
+          mkdir -p tmp
+          echo "临时目录: $TMPDIR"
+          df -h $TMPDIR || df -h /workdir
           echo -e "$(nproc) thread compile"
           make -j$(nproc) || make -j1 || make -j1 V=s
           echo "status=success" >> $GITHUB_OUTPUT
