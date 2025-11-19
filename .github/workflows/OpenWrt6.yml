@@ -93,7 +93,24 @@ jobs:
           echo "=============================================================================="
           df -hT
           echo "=============================================================================="
-        
+
+      - name: 清理 GitHub Actions Runner 缓存和日志
+        run: |
+          echo "清理 GitHub Actions Runner 缓存和日志..."
+          # 清理 runner 诊断日志（可能导致空间不足的目录）
+          sudo rm -rf /home/runner/actions-runner/_diag/* 2>/dev/null || true
+          sudo rm -rf /home/runner/actions-runner/cached/_diag/* 2>/dev/null || true
+          # 清理 runner 工作目录中的临时文件
+          sudo find /home/runner/work -name "*.log" -type f -delete 2>/dev/null || true
+          sudo find /home/runner/work -name "*.tmp" -type f -delete 2>/dev/null || true
+          # 清理系统日志
+          sudo journalctl --vacuum-time=1d 2>/dev/null || true
+          sudo journalctl --vacuum-size=100M 2>/dev/null || true
+          # 清理临时文件
+          sudo rm -rf /tmp/* 2>/dev/null || true
+          sudo rm -rf /var/tmp/* 2>/dev/null || true
+          echo "Runner 缓存和日志清理完成"
+          df -hT
       
       - name: 检出当前工作目录
         uses: actions/checkout@v4
@@ -208,6 +225,9 @@ jobs:
           mkdir -p tmp
           echo "临时目录: $TMPDIR"
           df -h $TMPDIR || df -h /workdir
+          # 编译前再次清理 runner 日志（防止编译过程中空间不足）
+          sudo rm -rf /home/runner/actions-runner/_diag/* 2>/dev/null || true
+          sudo rm -rf /home/runner/actions-runner/cached/_diag/* 2>/dev/null || true
           echo -e "$(nproc) thread compile"
           make -j$(nproc) || make -j1 || make -j1 V=s
           echo "status=success" >> $GITHUB_OUTPUT
