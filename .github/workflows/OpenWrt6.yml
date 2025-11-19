@@ -38,10 +38,11 @@ env:
 jobs:
   build:
     runs-on: ubuntu-22.04
+    timeout-minutes: 360
 
     steps:
       - name: 检查项目分支
-        uses: actions/checkout@main
+        uses: actions/checkout@v4
       - name: Check Server Performance
         run: |
           echo "警告⚠"
@@ -108,8 +109,16 @@ jobs:
         uses: P3TERX/ssh2actions@v1.0.0
         if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
         env:
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID || '' }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN || '' }}
+
+      - name: 设置 ccache 缓存
+        uses: actions/cache@v4
+        with:
+          path: /workdir/openwrt/.ccache
+          key: ccache-${{ runner.os }}-${{ hashFiles('**/x64.config') }}
+          restore-keys: |
+            ccache-${{ runner.os }}-
 
       - name: 下载安装包
         id: package
@@ -137,10 +146,10 @@ jobs:
         run: df -hT
 
       - name: 上传bin压缩目录
-        uses: actions/upload-artifact@main
+        uses: actions/upload-artifact@v4
         if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
         with:
-          name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+          name: OpenWrt_bin${{ env.DEVICE_NAME || '' }}${{ env.FILE_DATE || '' }}
           path: openwrt/bin/packages/x86_64
 
       - name: 整理编译好的固件
@@ -160,10 +169,10 @@ jobs:
           echo "status=success" >> $GITHUB_OUTPUT
 
       - name: 上传固件到github
-        uses: actions/upload-artifact@main
-        if: steps.organize.outputs.status == 'success' && !cancelled()
+        uses: actions/upload-artifact@v4
+        if: steps.organize.outputs.status == 'success' && !cancelled() && env.FIRMWARE != ''
         with:
-          name: OpenWrt_6.0${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+          name: OpenWrt_6.0${{ env.DEVICE_NAME || '' }}${{ env.FILE_DATE || '' }}
           path: ${{ env.FIRMWARE }}
 
       - name: 上传固件到NN网盘
@@ -200,7 +209,7 @@ jobs:
 
       - name: 发布至release
         uses: softprops/action-gh-release@v1
-        if: steps.tag.outputs.status == 'success' && !cancelled()
+        if: steps.tag.outputs.status == 'success' && !cancelled() && env.FIRMWARE != '' && env.FILE_TIME != ''
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         with:

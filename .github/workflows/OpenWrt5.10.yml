@@ -38,10 +38,11 @@ env:
 jobs:
   build:
     runs-on: ubuntu-22.04
+    timeout-minutes: 360
 
     steps:
       - name: 检查项目分支
-        uses: actions/checkout@main
+        uses: actions/checkout@v4
       - name: Check Server Performance
         run: |
           echo "警告⚠"
@@ -108,8 +109,8 @@ jobs:
         uses: P3TERX/ssh2actions@v1.0.0
         if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
         env:
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID || '' }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN || '' }}
 
       - name: 下载安装包
         id: package
@@ -126,7 +127,7 @@ jobs:
           cd openwrt
           echo -e "$(nproc) thread compile"
           make -j$(nproc) || make -j1 || make -j1 V=s
-          echo "::set-output name=status::success"
+          echo "status=success" >> $GITHUB_OUTPUT
           grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
           [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
           echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
@@ -137,10 +138,10 @@ jobs:
         run: df -hT
 
       - name: 上传bin压缩目录
-        uses: actions/upload-artifact@main
+        uses: actions/upload-artifact@v4
         if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
         with:
-          name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+          name: OpenWrt_bin${{ env.DEVICE_NAME || '' }}${{ env.FILE_DATE || '' }}
           path: openwrt/bin/packages/x86_64
 
       - name: 整理编译好的固件
@@ -157,13 +158,13 @@ jobs:
           find -name "*esxi.vmdk*" | xargs -i mv -f {} packages
           rm -rf packages
           echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-          echo "::set-output name=status::success"
+          echo "status=success" >> $GITHUB_OUTPUT
 
       - name: 上传固件到github
-        uses: actions/upload-artifact@main
-        if: steps.organize.outputs.status == 'success' && !cancelled()
+        uses: actions/upload-artifact@v4
+        if: steps.organize.outputs.status == 'success' && !cancelled() && env.FIRMWARE != ''
         with:
-          name: OpenWrt_5.10${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+          name: OpenWrt_5.10${{ env.DEVICE_NAME || '' }}${{ env.FILE_DATE || '' }}
           path: ${{ env.FIRMWARE }}
 
       - name: 上传固件到NN网盘
@@ -173,7 +174,7 @@ jobs:
           curl -fsSL git.io/file-transfer | sh
           ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
           echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
-          echo "::set-output name=url::$(cat cowtransfer.log | grep https | cut -f3 -d" ")"
+          echo "url=$(cat cowtransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_OUTPUT
 
       - name: 上传固件到WT网盘
         id: wetransfer
@@ -182,13 +183,13 @@ jobs:
           curl -fsSL git.io/file-transfer | sh
           ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
           echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
-          echo "::set-output name=url::$(cat wetransfer.log | grep https | cut -f3 -d" ")"
+          echo "url=$(cat wetransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_OUTPUT
 
       - name: 创建release发布页
         id: tag
         if: env.UPLOAD_RELEASE == 'true' && !cancelled()
         run: |
-          echo "::set-output name=release_tag::$(date +"%Y.%m.%d-%H%M")"
+          echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
           touch release.txt
           echo "功能介绍：含定时重拨、openclash、iStore、广告屏蔽大师 Plus+等少量插件。" >> release.txt
           echo "[固件源码](https://github.com/coolsnowwolf/lede)" >> release.txt
@@ -196,11 +197,11 @@ jobs:
           echo "📥 固件下载" >> release.txt
           [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
           [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
-          echo "::set-output name=status::success"
+          echo "status=success" >> $GITHUB_OUTPUT
 
       - name: 发布至release
         uses: softprops/action-gh-release@v1
-        if: steps.tag.outputs.status == 'success' && !cancelled()
+        if: steps.tag.outputs.status == 'success' && !cancelled() && env.FIRMWARE != '' && env.FILE_TIME != ''
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         with:
