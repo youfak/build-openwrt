@@ -56,10 +56,19 @@ fi
 # if [ -d "package/luci-app-openclash" ]; then
 #     log_warn "OpenClash 目录已存在，跳过下载"
 # else
-#     svn co https://github.com/vernesong/OpenClash/trunk/luci-app-openclash package/luci-app-openclash || {
-#         log_error "OpenClash 下载失败"
+#     # 使用 git sparse checkout 只下载 luci-app-openclash 目录
+#     mkdir -p /tmp/OpenClash-tmp
+#     cd /tmp/OpenClash-tmp
+#     git clone --depth=1 --filter=blob:none --sparse https://github.com/vernesong/OpenClash.git . || {
+#         log_error "OpenClash 仓库克隆失败"
+#         cd -
+#         rm -rf /tmp/OpenClash-tmp
 #         exit 1
 #     }
+#     git sparse-checkout set luci-app-openclash
+#     cd -
+#     mv /tmp/OpenClash-tmp/luci-app-openclash package/luci-app-openclash
+#     rm -rf /tmp/OpenClash-tmp
 #     log_info "OpenClash 下载完成"
 # fi
 

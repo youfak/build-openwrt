@@ -55,11 +55,25 @@ log_info "下载 OpenClash..."
 if [ -d "package/luci-app-openclash" ]; then
     log_warn "OpenClash 目录已存在，跳过下载"
 else
-    svn co https://github.com/vernesong/OpenClash/trunk/luci-app-openclash package/luci-app-openclash || {
-        log_error "OpenClash 下载失败"
+    # 使用 git clone 下载 OpenClash（GitHub SVN 已不可用）
+    TMP_DIR=$(mktemp -d)
+    cd "$TMP_DIR"
+    git clone --depth=1 https://github.com/vernesong/OpenClash.git . || {
+        log_error "OpenClash 仓库克隆失败"
+        cd -
+        rm -rf "$TMP_DIR"
         exit 1
     }
-    log_info "OpenClash 下载完成"
+    cd -
+    if [ -d "$TMP_DIR/luci-app-openclash" ]; then
+        mv "$TMP_DIR/luci-app-openclash" package/luci-app-openclash
+        log_info "OpenClash 下载完成"
+    else
+        log_error "OpenClash 目录未找到"
+        rm -rf "$TMP_DIR"
+        exit 1
+    fi
+    rm -rf "$TMP_DIR"
 fi
 
 # 添加 feed 源（优化：检查是否已存在，避免重复添加）
