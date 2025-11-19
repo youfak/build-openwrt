@@ -157,6 +157,12 @@ jobs:
           find -name "*vmlinuz*" | xargs -i mv -f {} packages
           find -name "*esxi.vmdk*" | xargs -i mv -f {} packages
           rm -rf packages
+          # 重命名所有文件，添加内核版本前缀（排除已包含版本号的文件）
+          for file in *; do
+            if [ -f "$file" ] && [[ "$file" != openwrt-5.10-* ]] && [[ "$file" != packages ]]; then
+              mv "$file" "openwrt-5.10-$file"
+            fi
+          done
           echo "FIRMWARE=$PWD" >> $GITHUB_ENV
           echo "status=success" >> $GITHUB_OUTPUT
 
