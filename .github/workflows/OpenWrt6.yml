@@ -108,12 +108,6 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          echo "开始清理不需要的工具包以释放磁盘空间..."
-          # 清理 Docker 镜像
-          docker rmi $(docker images -q) 2>/dev/null || true
-          sudo docker image prune --all --force 2>/dev/null || true
-          # 删除不需要的目录
-          sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL /etc/mysql /etc/php 2>/dev/null || true
           # 更新包列表
           sudo -E apt-get -qq update
           # 卸载不需要的工具包（参考 P3TERX 和 Haiibo 大佬的脚本）
