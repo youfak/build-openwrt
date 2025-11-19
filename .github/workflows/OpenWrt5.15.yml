@@ -136,8 +136,16 @@ jobs:
 
       - name: 加载自定义设置
         run: |
+          # 确保在正确的工作目录
+          cd $GITHUB_WORKSPACE
+          # 检查文件是否存在
+          if [ ! -f "$DIY_P1_SH" ]; then
+            echo "错误: 找不到文件 $DIY_P1_SH"
+            ls -la
+            exit 1
+          fi
           [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
-          chmod +x $GITHUB_WORKSPACE/$DIY_P1_SH
+          chmod +x $DIY_P1_SH
           cd openwrt
           $GITHUB_WORKSPACE/$DIY_P1_SH
 
@@ -166,9 +174,17 @@ jobs:
 
       - name: 更改设置
         run: |
+          # 确保在正确的工作目录
+          cd $GITHUB_WORKSPACE
+          # 检查文件是否存在
+          if [ ! -f "$DIY_P2_SH" ]; then
+            echo "错误: 找不到文件 $DIY_P2_SH"
+            ls -la
+            exit 1
+          fi
           [ -e files ] && mv files openwrt/files
           [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
-          chmod +x $GITHUB_WORKSPACE/$DIY_P2_SH
+          chmod +x $DIY_P2_SH
           cd openwrt
           $GITHUB_WORKSPACE/$DIY_P2_SH
 
