@@ -1,13 +1,3 @@
-#
-# Copyright (c) 2019-2020 P3TERX <https://p3terx.com>
-#
-# This is free software, licensed under the MIT License.
-# See /LICENSE for more information.
-#
-# https://github.com/P3TERX/Actions-OpenWrt
-# Description: Build OpenWrt using GitHub Actions
-#
-
 name: OpenWrt-lede5.15
 
 on:
@@ -135,16 +125,21 @@ jobs:
           ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
       - name: 加载自定义设置
+        working-directory: ${{ github.workspace }}
         run: |
-          # 切换到 GitHub 工作空间目录（文件在这里）
-          cd $GITHUB_WORKSPACE
+          # 确保在 GitHub 工作空间目录
           echo "当前工作目录: $(pwd)"
           echo "查找文件: $DIY_P1_SH"
+          echo "工作空间: $GITHUB_WORKSPACE"
+          echo "GitHub 工作空间: ${{ github.workspace }}"
+          # 列出所有文件
+          echo "当前目录文件列表:"
+          ls -la
           # 检查文件是否存在
           if [ ! -f "$DIY_P1_SH" ]; then
             echo "错误: 找不到文件 $DIY_P1_SH"
-            echo "当前目录文件列表:"
-            ls -la
+            echo "尝试查找所有 .sh 文件:"
+            find . -name "*.sh" -type f 2>/dev/null || true
             exit 1
           fi
           echo "找到文件: $DIY_P1_SH"
