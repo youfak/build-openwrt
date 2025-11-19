@@ -55,25 +55,43 @@ log_info "下载 OpenClash..."
 if [ -d "package/luci-app-openclash" ]; then
     log_warn "OpenClash 目录已存在，跳过下载"
 else
-    # 使用 git clone 下载 OpenClash（GitHub SVN 已不可用）
-    TMP_DIR=$(mktemp -d)
-    cd "$TMP_DIR"
-    git clone --depth=1 https://github.com/vernesong/OpenClash.git . || {
-        log_error "OpenClash 仓库克隆失败"
+    # 使用 git sparse checkout 下载 OpenClash（官方推荐方法）
+    mkdir -p package/luci-app-openclash
+    cd package/luci-app-openclash
+    git init || {
+        log_error "Git 初始化失败"
         cd -
-        rm -rf "$TMP_DIR"
         exit 1
     }
-    cd -
-    if [ -d "$TMP_DIR/luci-app-openclash" ]; then
-        mv "$TMP_DIR/luci-app-openclash" package/luci-app-openclash
+    git remote add -f origin https://github.com/vernesong/OpenClash.git || {
+        log_error "添加远程仓库失败"
+        cd -
+        rm -rf package/luci-app-openclash
+        exit 1
+    }
+    git config core.sparsecheckout true
+    echo "luci-app-openclash" >> .git/info/sparse-checkout
+    git pull --depth 1 origin master || {
+        log_error "OpenClash 下载失败"
+        cd -
+        rm -rf package/luci-app-openclash
+        exit 1
+    }
+    # 移动 luci-app-openclash 目录内容到当前目录（package/luci-app-openclash）
+    if [ -d "luci-app-openclash" ]; then
+        mv luci-app-openclash/* . 2>/dev/null || true
+        mv luci-app-openclash/.* . 2>/dev/null || true
+        rmdir luci-app-openclash 2>/dev/null || true
+        # 清理 git 相关文件
+        rm -rf .git .gitignore
         log_info "OpenClash 下载完成"
     else
         log_error "OpenClash 目录未找到"
-        rm -rf "$TMP_DIR"
+        cd -
+        rm -rf package/luci-app-openclash
         exit 1
     fi
-    rm -rf "$TMP_DIR"
+    cd -
 fi
 
 # 添加 feed 源（优化：检查是否已存在，避免重复添加）
