@@ -115,6 +115,13 @@ jobs:
       - name: 检出当前工作目录
         uses: actions/checkout@v4
 
+      - name: SSH链接管理
+        uses: P3TERX/ssh2actions@v1.0.0
+        if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
+        env:
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID || '' }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN || '' }}
+
       - name: 安装编译环境
         env:
           DEBIAN_FRONTEND: noninteractive
@@ -139,11 +146,9 @@ jobs:
         run: df -hT $PWD
 
       - name: 下载固件源码
-        working-directory: /workdir
+        working-directory: ./
         run: |
-          df -hT $GITHUB_WORKSPACE
-          git clone $REPO_URL -b $REPO_BRANCH openwrt
-          ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+          git clone --depth=1 $REPO_URL -b $REPO_BRANCH openwrt
 
       - name: 加载自定义设置
         run: |
@@ -172,21 +177,6 @@ jobs:
           cd openwrt
           $GITHUB_WORKSPACE/$DIY_P2_SH
 
-      - name: SSH链接管理
-        uses: P3TERX/ssh2actions@v1.0.0
-        if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
-        env:
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID || '' }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN || '' }}
-
-      - name: 设置 ccache 缓存
-        uses: actions/cache@v4
-        with:
-          path: /workdir/openwrt/.ccache
-          key: ccache-${{ runner.os }}-${{ hashFiles('**/x64.config') }}
-          restore-keys: |
-            ccache-${{ runner.os }}-
-
       - name: 下载安装包
         id: package
         run: |
@@ -198,19 +188,8 @@ jobs:
 
       - name: 开始编译固件
         id: compile
-        env:
-          TMPDIR: /workdir/openwrt/tmp
-          TMP: /workdir/openwrt/tmp
-          TEMP: /workdir/openwrt/tmp
         run: |
           cd openwrt
-          # 确保临时目录存在且有足够空间
-          mkdir -p tmp
-          echo "临时目录: $TMPDIR"
-          df -h $TMPDIR || df -h /workdir
-          # 编译前再次清理 runner 日志（防止编译过程中空间不足）
-          sudo rm -rf /home/runner/actions-runner/_diag/* 2>/dev/null || true
-          sudo rm -rf /home/runner/actions-runner/cached/_diag/* 2>/dev/null || true
           echo -e "$(nproc) thread compile"
           make -j$(nproc) || make -j1 || make -j1 V=s
           echo "status=success" >> $GITHUB_OUTPUT
