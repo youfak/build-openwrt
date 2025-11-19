@@ -136,16 +136,23 @@ jobs:
 
       - name: 加载自定义设置
         run: |
-          # 确保在正确的工作目录
+          # 切换到 GitHub 工作空间目录（文件在这里）
           cd $GITHUB_WORKSPACE
+          echo "当前工作目录: $(pwd)"
+          echo "查找文件: $DIY_P1_SH"
           # 检查文件是否存在
           if [ ! -f "$DIY_P1_SH" ]; then
             echo "错误: 找不到文件 $DIY_P1_SH"
+            echo "当前目录文件列表:"
             ls -la
             exit 1
           fi
+          echo "找到文件: $DIY_P1_SH"
+          # 移动 feeds 配置文件
           [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
+          # 设置执行权限
           chmod +x $DIY_P1_SH
+          # 进入 openwrt 目录并执行脚本
           cd openwrt
           $GITHUB_WORKSPACE/$DIY_P1_SH
 
@@ -174,17 +181,24 @@ jobs:
 
       - name: 更改设置
         run: |
-          # 确保在正确的工作目录
+          # 切换到 GitHub 工作空间目录（文件在这里）
           cd $GITHUB_WORKSPACE
+          echo "当前工作目录: $(pwd)"
+          echo "查找文件: $DIY_P2_SH"
           # 检查文件是否存在
           if [ ! -f "$DIY_P2_SH" ]; then
             echo "错误: 找不到文件 $DIY_P2_SH"
+            echo "当前目录文件列表:"
             ls -la
             exit 1
           fi
+          echo "找到文件: $DIY_P2_SH"
+          # 移动配置文件和目录
           [ -e files ] && mv files openwrt/files
           [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+          # 设置执行权限
           chmod +x $DIY_P2_SH
+          # 进入 openwrt 目录并执行脚本
           cd openwrt
           $GITHUB_WORKSPACE/$DIY_P2_SH
 
