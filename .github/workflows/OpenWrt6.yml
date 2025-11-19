@@ -136,6 +136,13 @@ jobs:
 
       - name: 加载自定义设置
         run: |
+          ls -la
+          if [ ! -f "$DIY_P1_SH" ]; then
+            echo "错误: 找不到文件 $DIY_P1_SH"
+            ls -la
+            exit 1
+          fi
+          echo "找到$DIY_P1_SH"
           # 确保在正确的工作目录
           cd $GITHUB_WORKSPACE
           # 检查文件是否存在
