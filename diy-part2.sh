@@ -30,47 +30,6 @@ log_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
-# 防止插件冲突，删除重复插件（在 feeds install 之前执行）
-log_info "清理冲突插件，防止重复..."
-
-# 删除冲突的 luci 应用
-if [ -d "feeds/luci/applications/luci-app-mosdns" ]; then
-    rm -rf feeds/luci/applications/luci-app-mosdns
-    log_info "已删除 feeds/luci/applications/luci-app-mosdns"
-fi
-
-# 删除冲突的网络包
-CONFLICT_NET_PACKAGES="alist adguardhome mosdns xray* v2ray* sing* smartdns"
-for pkg in $CONFLICT_NET_PACKAGES; do
-    if [ -d "feeds/packages/net/$pkg" ]; then
-        rm -rf feeds/packages/net/$pkg
-        log_info "已删除 feeds/packages/net/$pkg"
-    fi
-done
-
-# 删除冲突的工具包
-if [ -d "feeds/packages/utils/v2dat" ]; then
-    rm -rf feeds/packages/utils/v2dat
-    log_info "已删除 feeds/packages/utils/v2dat"
-fi
-
-# 删除并重新克隆 golang（使用 kenzo 版本）
-if [ -d "feeds/packages/lang/golang" ]; then
-    rm -rf feeds/packages/lang/golang
-    log_info "已删除 feeds/packages/lang/golang"
-fi
-
-log_info "重新克隆 golang（kenzo 版本）..."
-if [ ! -d "feeds/packages/lang/golang" ]; then
-    git clone --depth=1 https://github.com/kenzok8/golang feeds/packages/lang/golang || {
-        log_error "golang 克隆失败"
-        exit 1
-    }
-    log_info "golang 克隆完成"
-fi
-
-log_info "冲突插件清理完成"
-
 # 安全执行 sed 命令
 safe_sed() {
     local file="$1"

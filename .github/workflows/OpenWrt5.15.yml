@@ -158,23 +158,6 @@ jobs:
       - name: 下载插件
         run: cd openwrt && ./scripts/feeds update -a
 
-      # - name: 清理冲突插件（防止重复）
-      #   run: |
-      #     cd openwrt
-      #     echo "开始清理冲突插件..."
-      #     # 删除冲突的 luci 应用
-      #     rm -rf feeds/luci/applications/luci-app-mosdns 2>/dev/null || true
-      #     # 删除冲突的网络包
-      #     rm -rf feeds/packages/net/{alist,adguardhome,mosdns} 2>/dev/null || true
-      #     rm -rf feeds/packages/net/xray* feeds/packages/net/v2ray* 2>/dev/null || true
-      #     rm -rf feeds/packages/net/sing* feeds/packages/net/smartdns 2>/dev/null || true
-      #     # 删除冲突的工具包
-      #     rm -rf feeds/packages/utils/v2dat 2>/dev/null || true
-      #     # 删除并重新克隆 golang（使用 kenzo 版本）
-      #     rm -rf feeds/packages/lang/golang 2>/dev/null || true
-      #     git clone --depth=1 https://github.com/kenzok8/golang feeds/packages/lang/golang || true
-      #     echo "冲突插件清理完成"
-
       - name: 读取插件
         run: cd openwrt && ./scripts/feeds install -a
 
