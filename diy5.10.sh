@@ -47,30 +47,25 @@ log_info "开始配置内核版本 5.10（纯净版）..."
 if check_file ./target/linux/x86/Makefile; then
     sed -i 's/KERNEL_PATCHVER:=\([0-9]\+\)\.\([0-9]\+\)/KERNEL_PATCHVER:=5.10/g' ./target/linux/x86/Makefile
     log_info "内核版本已切换为 5.10"
+    
+    # 添加默认包（网卡驱动、存储设备、工具等）
+    if grep -q "DEFAULT_PACKAGES +=" ./target/linux/x86/Makefile; then
+        sed -i 's/DEFAULT_PACKAGES +=/DEFAULT_PACKAGES += kmod-fs-f2fs kmod-mmc kmod-sdhci kmod-usb-hid usbutils pciutils lm-sensors-detect kmod-atlantic kmod-vmxnet3 kmod-igbvf kmod-iavf kmod-bnx2x kmod-pcnet32 kmod-tulip kmod-r8101 kmod-r8125 kmod-r8126 kmod-8139cp kmod-8139too kmod-i40e kmod-drm-amdgpu kmod-mlx4-core kmod-mlx5-core fdisk lsblk kmod-phy-broadcom kmod-ixgbevf kmod-ip6tables kmod-nf-ipt6 kmod-nf-nat6 kmod-iptunnel6 kmod-sit open-vm-tools open-vm-tools-fuse/' ./target/linux/x86/Makefile
+        log_info "已添加默认包（网卡驱动、存储设备、工具、IPv6支持、VMware工具等）"
+    else
+        log_warn "未找到 DEFAULT_PACKAGES 配置，跳过默认包设置"
+    fi
 else
     log_warn "未找到 Makefile，跳过内核版本设置"
 fi
 
-# 使用自定义openclash（5.10.config 没有这个插件，已注释）
-# log_info "下载 OpenClash..."
-# if [ -d "package/luci-app-openclash" ]; then
-#     log_warn "OpenClash 目录已存在，跳过下载"
-# else
-#     # 使用 git sparse checkout 只下载 luci-app-openclash 目录
-#     mkdir -p /tmp/OpenClash-tmp
-#     cd /tmp/OpenClash-tmp
-#     git clone --depth=1 --filter=blob:none --sparse https://github.com/vernesong/OpenClash.git . || {
-#         log_error "OpenClash 仓库克隆失败"
-#         cd -
-#         rm -rf /tmp/OpenClash-tmp
-#         exit 1
-#     }
-#     git sparse-checkout set luci-app-openclash
-#     cd -
-#     mv /tmp/OpenClash-tmp/luci-app-openclash package/luci-app-openclash
-#     rm -rf /tmp/OpenClash-tmp
-#     log_info "OpenClash 下载完成"
-# fi
+# 修改固件分区大小（256MB -> 1024MB）
+if check_file ./target/linux/x86/image/Makefile; then
+    sed -i 's/256/1024/g' ./target/linux/x86/image/Makefile
+    log_info "固件分区大小已修改为 1024MB"
+else
+    log_warn "未找到 image/Makefile，跳过分区大小设置"
+fi
 
 # 添加 feed 源（优化：检查是否已存在，避免重复添加）
 log_info "配置 feed 源..."
@@ -92,7 +87,7 @@ if check_file feeds.conf.default; then
         log_warn "small feed 源已存在，跳过"
     fi
     
-    # 检查并添加 helloworld feed（方法三：OpenWrt feed）
+    # 检查并添加 helloworld feed
     if ! grep -q "helloworld" feeds.conf.default; then
         sed -i "/helloworld/d" feeds.conf.default
         echo "src-git helloworld https://github.com/fw876/helloworld.git" >> feeds.conf.default
@@ -106,12 +101,5 @@ else
 fi
 
 log_info "Feed 源配置完成"
-
-# 使用自定义主题（已注释，按需启用）
-# log_info "下载自定义主题..."
-# git clone https://github.com/xiaoqingfengATGH/luci-theme-infinityfreedom package/luci-theme-infinityfreedom #该主题有问题，不要使用(不支持商店)
-# git clone https://github.com/kenzok78/luci-theme-argonne package/luci-theme-argonne
-# git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git  package/luci-theme-argon-18.06
-# git clone -b 18.06 https://github.com/garypang13/luci-theme-edge.git package/luci-theme-edge
 
 log_info "DIY 脚本 part 1 执行完成！"

@@ -46,8 +46,24 @@ log_info "开始配置内核版本 5.15..."
 if check_file ./target/linux/x86/Makefile; then
     sed -i 's/KERNEL_PATCHVER:=\([0-9]\+\)\.\([0-9]\+\)/KERNEL_PATCHVER:=5.15/g' ./target/linux/x86/Makefile
     log_info "内核版本已切换为 5.15"
+    
+    # 添加默认包（网卡驱动、存储设备、工具等）
+    if grep -q "DEFAULT_PACKAGES +=" ./target/linux/x86/Makefile; then
+        sed -i 's/DEFAULT_PACKAGES +=/DEFAULT_PACKAGES += kmod-fs-f2fs kmod-mmc kmod-sdhci kmod-usb-hid usbutils pciutils lm-sensors-detect kmod-atlantic kmod-vmxnet3 kmod-igbvf kmod-iavf kmod-bnx2x kmod-pcnet32 kmod-tulip kmod-r8101 kmod-r8125 kmod-r8126 kmod-8139cp kmod-8139too kmod-i40e kmod-drm-amdgpu kmod-mlx4-core kmod-mlx5-core fdisk lsblk kmod-phy-broadcom kmod-ixgbevf open-vm-tools open-vm-tools-fuse/' ./target/linux/x86/Makefile
+        log_info "已添加默认包（网卡驱动、存储设备、工具、VMware工具等）"
+    else
+        log_warn "未找到 DEFAULT_PACKAGES 配置，跳过默认包设置"
+    fi
 else
     log_warn "未找到 Makefile，跳过内核版本设置"
+fi
+
+# 修改固件分区大小（256MB -> 1024MB）
+if check_file ./target/linux/x86/image/Makefile; then
+    sed -i 's/256/1024/g' ./target/linux/x86/image/Makefile
+    log_info "固件分区大小已修改为 1024MB"
+else
+    log_warn "未找到 image/Makefile，跳过分区大小设置"
 fi
 
 # 使用自定义openclash
@@ -114,7 +130,7 @@ if check_file feeds.conf.default; then
         log_warn "small feed 源已存在，跳过"
     fi
     
-    # 检查并添加 helloworld feed（方法三：OpenWrt feed）
+    # 检查并添加 helloworld feed
     if ! grep -q "helloworld" feeds.conf.default; then
         sed -i "/helloworld/d" feeds.conf.default
         echo "src-git helloworld https://github.com/fw876/helloworld.git" >> feeds.conf.default
@@ -131,7 +147,6 @@ log_info "Feed 源配置完成"
 
 # 使用自定义主题（已注释，按需启用）
 # log_info "下载自定义主题..."
-# git clone https://github.com/xiaoqingfengATGH/luci-theme-infinityfreedom package/luci-theme-infinityfreedom #该主题有问题，不要使用(不支持商店)
 # git clone https://github.com/kenzok78/luci-theme-argonne package/luci-theme-argonne
 # git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git  package/luci-theme-argon-18.06
 # git clone -b 18.06 https://github.com/garypang13/luci-theme-edge.git package/luci-theme-edge
