@@ -143,6 +143,49 @@ if [ -f "package/base-files/files/etc/sysctl.conf" ]; then
     fi
 fi
 
+# 安装 LuCI 插件（从 feed 源安装）
+log_info "安装 LuCI 插件..."
+
+# 定义要安装的插件列表
+LUCI_PLUGINS=(
+    "luci-app-zerotier"
+    "luci-app-wrtbwmon"
+    "luci-app-wol"
+    "luci-app-wireguard"
+    "luci-app-watchcat"
+    "luci-app-arpbind"
+    "luci-app-autoreboot"
+    "luci-app-filetransfer"
+    "luci-app-firewall"
+    "luci-app-frpc"
+    "luci-app-mwan3"
+    "luci-app-mwan3helper"
+    "luci-app-nlbwmon"
+    "luci-app-ramfree"
+    "luci-app-turboacc"
+    "luci-app-vlmcsd"
+)
+
+# 安装插件
+INSTALLED_COUNT=0
+FAILED_COUNT=0
+
+for plugin in "${LUCI_PLUGINS[@]}"; do
+    if ./scripts/feeds install -a -f -p kenzo $plugin 2>/dev/null || \
+       ./scripts/feeds install -a -f -p small $plugin 2>/dev/null; then
+        log_info "✓ $plugin 安装成功"
+        ((INSTALLED_COUNT++))
+    else
+        log_warn "✗ $plugin 安装失败（可能不在 feed 源中）"
+        ((FAILED_COUNT++))
+    fi
+done
+
+log_info "LuCI 插件安装完成：成功 $INSTALLED_COUNT 个，失败 $FAILED_COUNT 个"
+
+# 注意：Turbo ACC 的特殊选项（Shortcut-FE CM, BBR CCA, Pdnsd）需要在 .config 文件中配置
+# 这些选项在编译时通过 make menuconfig 或直接编辑 .config 文件来启用
+
 log_info "DIY 脚本 part 2 执行完成！"
 
 # ============================================================
