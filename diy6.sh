@@ -114,14 +114,6 @@ if check_file feeds.conf.default; then
     else
         log_warn "small feed 源已存在，跳过"
     fi
-    
-    # 检查并添加 helloworld feed
-    if ! grep -q "fw876/helloworld" feeds.conf.default; then
-        echo 'src-git fw876 https://github.com/fw876/helloworld' >> feeds.conf.default
-        log_info "已添加 helloworld feed 源"
-    else
-        log_warn "helloworld feed 源已存在，跳过"
-    fi
 else
     log_error "feeds.conf.default 文件不存在"
     exit 1
@@ -130,10 +122,6 @@ fi
 log_info "Feed 源配置完成"
 
 # 使用自定义主题（已注释，按需启用）
-# log_info "下载自定义主题..."
-# git clone https://github.com/xiaoqingfengATGH/luci-theme-infinityfreedom package/luci-theme-infinityfreedom #该主题有问题，不要使用(不支持商店)
-# git clone https://github.com/kenzok78/luci-theme-argonne package/luci-theme-argonne
-# git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git  package/luci-theme-argon-18.06
-# git clone -b 18.06 https://github.com/garypang13/luci-theme-edge.git package/luci-theme-edge
+# git clone https://github.com/jerrykuku/luci-theme-argon.git  package/luci-theme-argon
 
 log_info "DIY 脚本 part 1 执行完成！"

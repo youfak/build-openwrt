@@ -25,7 +25,7 @@
 | Extra packages | autocore |  |  |
 |  | automount |  |  |
 |  | <span style="color: #FF0000;">**autosamba(只支持samba3,选择samba4时去掉)**</span> |  |  |
-|  | ipv6helper(支持IPv6）(*) |  |  |
+|  | <span style="color: #0066FF;">ipv6helper(支持IPv6）(*)</span> |  |  |
 | Kernel modules(内核模块) | Block Devices（块设备支持） | <span style="color: #FFD700;">**kmod-ata-core（串行ATA总线支持，即SATA硬盘支持)**</span> | <span style="color: #FFD700;">**kmod-ata-ahci**</span> |
 |  |  | <span style="color: #FFD700;">**kmod-block2mtd**</span> |  |
 |  |  | kmod-scsi-core |  |

@@ -115,12 +115,12 @@ if check_file feeds.conf.default; then
     fi
     
     # 检查并添加 helloworld feed
-    if ! grep -q "fw876/helloworld" feeds.conf.default; then
-        echo 'src-git fw876 https://github.com/fw876/helloworld' >> feeds.conf.default
-        log_info "已添加 helloworld feed 源"
-    else
-        log_warn "helloworld feed 源已存在，跳过"
-    fi
+    # if ! grep -q "fw876/helloworld" feeds.conf.default; then
+    #     echo 'src-git fw876 https://github.com/fw876/helloworld' >> feeds.conf.default
+    #     log_info "已添加 helloworld feed 源"
+    # else
+    #     log_warn "helloworld feed 源已存在，跳过"
+    # fi
 else
     log_error "feeds.conf.default 文件不存在"
     exit 1
