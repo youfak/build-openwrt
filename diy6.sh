@@ -145,6 +145,33 @@ fi
 
 log_info "Feed 源配置完成"
 
+log_info "清理不需要的代理插件（bypass / ssr-plus / passwall）..."
+
+# 删除 kenzo/small 提供的全部代理包
+sed -i '/luci-app-bypass/d' .config
+sed -i '/luci-app-ssr-plus/d' .config
+sed -i '/luci-app-passwall/d' .config
+sed -i '/CONFIG_PACKAGE_shadowsocks/d' .config
+sed -i '/CONFIG_PACKAGE_xray/d' .config
+sed -i '/CONFIG_PACKAGE_v2ray/d' .config
+sed -i '/CONFIG_PACKAGE_trojan/d' .config
+sed -i '/CONFIG_PACKAGE_sing-box/d' .config
+
+# 删除透明代理模块（最容易引起依赖循环）
+sed -i '/Iptables_Transparent_Proxy/d' .config
+
+# 防止 feeds 自动加依赖
+echo "
+CONFIG_PACKAGE_luci-app-bypass=n
+CONFIG_PACKAGE_luci-app-ssr-plus=n
+CONFIG_PACKAGE_luci-app-passwall=n
+CONFIG_PACKAGE_luci-app-passwall2=n
+CONFIG_PACKAGE_luci-app-passwall_Iptables_Transparent_Proxy=n
+" >> .config
+
+log_info "代理插件清理完成"
+
+
 # 使用自定义主题（已注释，按需启用）
 git clone https://github.com/jerrykuku/luci-theme-argon.git  package/luci-theme-argon
 
