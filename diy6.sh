@@ -41,13 +41,13 @@ check_file() {
     return 0
 }
 
-log_info "开始配置内核版本 6.1..."
+log_info "开始配置内核版本 6.6..."
 
 # 切换固件版本
 if check_file ./target/linux/x86/Makefile; then
-    sed -i 's/KERNEL_PATCHVER:=\([0-9]\+\)\.\([0-9]\+\)/KERNEL_PATCHVER:=6.1/g' ./target/linux/x86/Makefile
-    sed -i 's/KERNEL_TESTING_PATCHVER:=\([0-9]\+\)\.\([0-9]\+\)/KERNEL_TESTING_PATCHVER:=6.1/g' ./target/linux/x86/Makefile
-    log_info "内核版本已切换为 6.1"
+    sed -i 's/KERNEL_PATCHVER:=\([0-9]\+\)\.\([0-9]\+\)/KERNEL_PATCHVER:=6.6/g' ./target/linux/x86/Makefile
+    sed -i 's/KERNEL_TESTING_PATCHVER:=\([0-9]\+\)\.\([0-9]\+\)/KERNEL_TESTING_PATCHVER:=6.6/g' ./target/linux/x86/Makefile
+    log_info "内核版本已切换为 6.6"
     
     # 添加默认包（网卡驱动、存储设备、工具等）
     if grep -q "DEFAULT_PACKAGES +=" ./target/linux/x86/Makefile; then
