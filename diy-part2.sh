@@ -1,171 +1,160 @@
 #!/bin/bash
 #============================================================
-# https://github.com/P3TERX/Actions-OpenWrt
-# File name: diy-part2.sh
-# Description: OpenWrt DIY script part 2 (After Update feeds)
-# Lisence: MIT
-# Author: P3TERX
-# Blog: https://p3terx.com
+# DIY script part 2 (After Update feeds)
 #============================================================
 
-# 设置错误时退出（但允许某些命令失败）
 set -e
 
-# 颜色输出定义
+# -----------------------------
+# 彩色输出
+# -----------------------------
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
-# 日志函数
-log_info() {
-    echo -e "${GREEN}[INFO]${NC} $1"
-}
+log_info() { echo -e "${GREEN}[INFO]${NC} $1"; }
+log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
+log_error(){ echo -e "${RED}[ERROR]${NC} $1"; }
 
-log_warn() {
-    echo -e "${YELLOW}[WARN]${NC} $1"
-}
-
-log_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-}
-
-# 安全执行 sed 命令
+# -----------------------------
+# 安全 sed
+# -----------------------------
 safe_sed() {
     local file="$1"
     local pattern="$2"
-    local replacement="$3"
-    local desc="$4"
-    
+    local desc="$3"
+
     if [ -f "$file" ]; then
         if sed -i "$pattern" "$file" 2>/dev/null; then
             log_info "$desc"
         else
-            log_warn "$desc 失败，文件可能不存在或格式不匹配: $file"
+            log_warn "执行 sed 失败: $file"
         fi
     else
-        log_warn "文件不存在，跳过: $file"
+        log_warn "文件不存在: $file"
     fi
 }
 
-log_info "开始执行 DIY 脚本 part 2..."
+log_info "开始执行 DIY 脚本 part 2 ..."
 
-# 修改默认IP
-log_info "修改默认IP为 192.168.99.1..."
-safe_sed "package/base-files/files/bin/config_generate" \
-    's/192.168.1.1/192.168.99.1/g' \
-    "" \
-    "默认IP已修改为 192.168.99.1"
+# ============================================================
+# 1. 修改默认 LAN IP（如不存在才修改）
+# ============================================================
+TARGET_IP="192.168.99.1"
+FILE_IP="package/base-files/files/bin/config_generate"
 
-# 路由器设置密码为空
-log_info "设置默认密码为空..."
-safe_sed "package/lean/default-settings/files/zzz-default-settings" \
-    's@.*CYXluq4wUazHjmCDBCqXF*@#&@g' \
-    "" \
-    "默认密码已设置为空"
-
-# 修改主机名字
-log_info "设置主机名为 OpenWrt..."
-safe_sed "package/lean/default-settings/files/zzz-default-settings" \
-    '/uci commit system/i\uci set system.@system[0].hostname='\''OpenWrt'\''' \
-    "" \
-    "主机名已设置为 OpenWrt"
-
-# 内核版本号里显示构建信息
-log_info "添加构建信息到版本号..."
-BUILD_DATE=$(TZ=UTC-8 date "+%Y.%m.%d")
-if [ -f "package/lean/default-settings/files/zzz-default-settings" ]; then
-    sed -i "s/OpenWrt /Child build ${BUILD_DATE} @ OpenWrt /g" package/lean/default-settings/files/zzz-default-settings && \
-    log_info "构建信息已添加: Child build ${BUILD_DATE}" || \
-    log_warn "添加构建信息失败"
-fi
-
-# 修正连接数（优化：检查是否已存在）
-log_info "优化连接数设置..."
-if [ -f "package/base-files/files/etc/sysctl.conf" ]; then
-    if ! grep -q "net.netfilter.nf_conntrack_max=165535" package/base-files/files/etc/sysctl.conf; then
-        sed -i '/customized in this file/a net.netfilter.nf_conntrack_max=165535' package/base-files/files/etc/sysctl.conf
-        log_info "连接数已优化为 165535"
+if [ -f "$FILE_IP" ]; then
+    if grep -q "192.168.1.1" "$FILE_IP"; then
+        sed -i "s/192.168.1.1/$TARGET_IP/g" "$FILE_IP"
+        log_info "默认 LAN IP 修改为：$TARGET_IP"
     else
-        log_warn "连接数设置已存在，跳过"
+        log_warn "默认 IP 已经被修改过，跳过"
     fi
 else
-    log_warn "sysctl.conf 文件不存在，跳过连接数优化"
+    log_warn "未找到 config_generate，跳过 IP 修改"
 fi
 
-# 更换lede源码中自带argon主题
-log_info "配置 Argon 主题..."
-if [ -f "./feeds/luci/collections/luci/Makefile" ]; then
-    sed -i 's/luci-theme-bootstrap/luci-theme-argone/g' ./feeds/luci/collections/luci/Makefile
+# ============================================================
+# 2. 默认密码为空
+# ============================================================
+PASS_FILE="package/lean/default-settings/files/zzz-default-settings"
+
+if [ -f "$PASS_FILE" ]; then
+    sed -i "s@.*CYXluq4wUazHjmCDBCqXF*@#&@" "$PASS_FILE"
+    log_info "默认密码已设置为空"
+else
+    log_warn "找不到默认设置文件，跳过密码设置"
+fi
+
+# ============================================================
+# 3. 修改主机名
+# ============================================================
+if [ -f "$PASS_FILE" ]; then
+    if ! grep -q "uci set system.@system\[0\].hostname='OpenWrt'" "$PASS_FILE"; then
+        sed -i "/uci commit system/i\uci set system.@system[0].hostname='OpenWrt'" "$PASS_FILE"
+        log_info "主机名已设置为 OpenWrt"
+    else
+        log_warn "主机名已存在配置，跳过"
+    fi
+fi
+
+# ============================================================
+# 4. Kernel Version 显示构建日期
+# ============================================================
+BUILD_DATE=$(TZ=UTC-8 date "+%Y.%m.%d")
+
+if [ -f "$PASS_FILE" ]; then
+    sed -i "s/OpenWrt /Child build ${BUILD_DATE} @ OpenWrt /g" "$PASS_FILE" \
+        && log_info "版本号构建信息已更新" \
+        || log_warn "版本号替换失败"
+fi
+
+# ============================================================
+# 5. 优化连接数
+# ============================================================
+SYSCTL_FILE="package/base-files/files/etc/sysctl.conf"
+
+if [ -f "$SYSCTL_FILE" ]; then
+    if ! grep -q "nf_conntrack_max" "$SYSCTL_FILE"; then
+        echo "net.netfilter.nf_conntrack_max=165535" >> "$SYSCTL_FILE"
+        log_info "连接数优化完成: 165535"
+    else
+        log_warn "连接数已存在，跳过"
+    fi
+fi
+
+# ============================================================
+# 6. 设置 Argon 为默认主题
+# ============================================================
+LUCIMK="./feeds/luci/collections/luci/Makefile"
+
+if [ -f "$LUCIMK" ]; then
+    sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' "$LUCIMK"
     log_info "默认主题已切换为 Argon"
 else
-    log_warn "luci Makefile 不存在，跳过主题切换"
+    log_warn "未找到 luci Makefile，跳过主题设置"
 fi
 
-# 清理不需要的主题（如果存在）
-if [ -d "./feeds/luci/luci-theme-argon" ]; then
-    rm -rf ./feeds/luci/luci-theme-argon
-    log_info "已删除 feeds 中的 luci-theme-argon"
-fi
+# ============================================================
+# 7. 系统性能优化（TCP / FS）
+# ============================================================
+if [ -f "$SYSCTL_FILE" ]; then
+    if ! grep -q "tcp_fastopen" "$SYSCTL_FILE"; then
+        cat >> "$SYSCTL_FILE" << 'EOF'
 
-if [ -d "./feeds/luci-theme-neobird" ]; then
-    rm -rf ./feeds/luci-theme-neobird
-    log_info "已删除 feeds 中的 luci-theme-neobird"
-fi
-
-# 系统优化：添加更多性能优化配置
-log_info "添加系统性能优化..."
-
-# 优化 TCP 参数
-if [ -f "package/base-files/files/etc/sysctl.conf" ]; then
-    # 检查并添加 TCP 优化参数
-    if ! grep -q "net.core.rmem_max" package/base-files/files/etc/sysctl.conf; then
-        cat >> package/base-files/files/etc/sysctl.conf << 'EOF'
-
-# TCP 性能优化
+# ===== TCP 优化 =====
 net.core.rmem_max = 16777216
 net.core.wmem_max = 16777216
 net.ipv4.tcp_rmem = 4096 87380 16777216
 net.ipv4.tcp_wmem = 4096 65536 16777216
 net.core.netdev_max_backlog = 5000
 net.ipv4.tcp_fastopen = 3
+
 EOF
-        log_info "TCP 性能优化参数已添加"
+        log_info "TCP 优化参数已添加"
+    fi
+
+    if ! grep -q "vm.swappiness" "$SYSCTL_FILE"; then
+        echo "vm.swappiness = 10" >> "$SYSCTL_FILE"
+        log_info "添加文件系统优化: vm.swappiness=10"
     fi
 fi
 
-# 优化文件系统
-log_info "优化文件系统配置..."
-if [ -f "package/base-files/files/etc/sysctl.conf" ]; then
-    if ! grep -q "vm.swappiness" package/base-files/files/etc/sysctl.conf; then
-        echo "vm.swappiness = 10" >> package/base-files/files/etc/sysctl.conf
-        log_info "已优化 swap 使用策略"
-    fi
-fi
-
-# LuCI 插件配置说明
-# 所有 LuCI 插件已在 .config 文件中配置，编译系统会自动处理依赖和安装
-# 无需在此处手动安装，只需确保 feed 源已正确配置（在 diy-part1.sh 中完成）
-
+# ============================================================
+# 完成
+# ============================================================
 log_info "DIY 脚本 part 2 执行完成！"
+exit 0
 
 # ============================================================
-# 可选配置（按需取消注释使用）
+# 可选扩展（保留）
 # ============================================================
-
-# 删除自带的adguardhome
+# 删除自带 adguardhome
 # rm -rf ./feeds/packages/net/adguardhome
 # rm -rf ./package/feeds/kenzo/luci-app-adguardhome
-
-# 禁止Turbo ACC 网络加速修改net.bridge.bridge-nf-call-iptables的值为1
-# (修改为1后旁路由需开启ip动态伪装，影响下行带宽)
-# sed -i '/exit 0/i sed -i "s/\\[ -d \\/sys\\/kernel\\/debug\\/ecm\\/ecm_nss_ipv4 \\] \\&\\& return 0/\\[ -d \\/sys\\/kernel\\/debug\\/ecm\\/ecm_nss_ipv4 \\] \\&\\& return 1/g" /etc/init.d/qca-nss-ecm' package/lean/default-settings/files/zzz-default-settings
-# sed -i '/exit 0/i sed -i "s/\\[ -d \\/sys\\/kernel\\/debug\\/ecm\\/ecm_nss_ipv4 \\] \\&\\& sysctl -w dev.nss.general.redirect=1/\\#[ -d \\/sys\\/kernel\\/debug\\/ecm\\/ecm_nss_ipv4 \\] \\&\\& sysctl -w dev.nss.general.redirect=1/g" /etc/init.d/qca-nss-ecm' package/lean/default-settings/files/zzz-default-settings
-# sed -i '/exit 0/i /etc/init.d/qca-nss-ecm disable' package/lean/default-settings/files/zzz-default-settings
 
 # 添加指定 adguardhome
 # svn co https://github.com/kiddin9/openwrt-packages/trunk/adguardhome feeds/packages/net/adguardhome
 # svn co https://github.com/kiddin9/openwrt-packages/trunk/luci-app-adguardhome package/feeds/kenzo/luci-app-adguardhome
-
-
 
