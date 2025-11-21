@@ -48,14 +48,6 @@ if check_file ./target/linux/x86/Makefile; then
     sed -i 's/KERNEL_PATCHVER:=\([0-9]\+\)\.\([0-9]\+\)/KERNEL_PATCHVER:=6.6/g' ./target/linux/x86/Makefile
     sed -i 's/KERNEL_TESTING_PATCHVER:=\([0-9]\+\)\.\([0-9]\+\)/KERNEL_TESTING_PATCHVER:=6.6/g' ./target/linux/x86/Makefile
     log_info "内核版本已切换为 6.6"
-    
-    # 添加默认包（网卡驱动、存储设备、工具等）
-    if grep -q "DEFAULT_PACKAGES +=" ./target/linux/x86/Makefile; then
-        sed -i 's/DEFAULT_PACKAGES +=/DEFAULT_PACKAGES += autocore automount base-files block-mount ca-bundle default-settings-chn dnsmasq-full dnsmasq_full_dhcpv6 dropbear fdisk firewall4 fstools grub2-bios-setup i915-firmware-dmc kmod-8139cp kmod-8139too kmod-button-hotplug kmod-e1000e kmod-fs-f2fs kmod-i40e kmod-igb kmod-igbvf kmod-igc kmod-ixgbe kmod-ixgbevf kmod-mmc kmod-nf-nathelper kmod-nf-nathelper-extra kmod-nft-offload kmod-pcnet32 kmod-r8101 kmod-r8125 kmod-r8126 kmod-r8168 kmod-sdhci kmod-tulip kmod-usb-hid kmod-usb-net kmod-usb-net-asix kmod-usb-net-asix-ax88179 kmod-usb-net-rtl8150 kmod-atlantic kmod-vmxnet3 kmod-iavf kmod-bnx2x kmod-drm-amdgpu kmod-mlx4-core kmod-mlx5-core lsblk kmod-phy-broadcom usbutils pciutils lm-sensors-detect kmod-ip6tables kmod-nf-ipt6 kmod-nf-nat6 kmod-iptunnel6 kmod-sit kmof-usb-storage open-vm-tools open-vm-tools-fuse/' ./target/linux/x86/Makefile
-        log_info "已添加默认包（系统基础、网卡驱动、存储设备、工具、IPv6支持、VMware工具等）"
-    else
-        log_warn "未找到 DEFAULT_PACKAGES 配置，跳过默认包设置"
-    fi
 else
     log_warn "未找到 Makefile，跳过内核版本设置"
 fi
