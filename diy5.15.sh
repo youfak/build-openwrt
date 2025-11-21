@@ -91,10 +91,10 @@ if check_file feeds.conf.default; then
     }
 
     # 官方源（保留）
-    add_feed "packages" "https://github.com/openwrt/packages.git"
-    add_feed "luci" "https://github.com/openwrt/luci.git"
-    add_feed "routing" "https://git.openwrt.org/feed/routing.git"
-    add_feed "telephony" "https://git.openwrt.org/feed/telephony.git"
+    # add_feed "packages" "https://github.com/openwrt/packages.git"
+    # add_feed "luci" "https://github.com/openwrt/luci.git"
+    # add_feed "routing" "https://git.openwrt.org/feed/routing.git"
+    # add_feed "telephony" "https://git.openwrt.org/feed/telephony.git"
 
     # 第三方源
     add_feed "kenzo" "https://github.com/kenzok8/openwrt-packages"
