@@ -41,23 +41,15 @@ check_file() {
     return 0
 }
 
-log_info "开始配置内核版本 6.6..."
+log_info "开始配置内核版本 6.1..."
 
 # 切换固件版本
 if check_file ./target/linux/x86/Makefile; then
-    sed -i 's/KERNEL_PATCHVER:=\([0-9]\+\)\.\([0-9]\+\)/KERNEL_PATCHVER:=6.6/g' ./target/linux/x86/Makefile
-    sed -i 's/KERNEL_TESTING_PATCHVER:=\([0-9]\+\)\.\([0-9]\+\)/KERNEL_TESTING_PATCHVER:=6.6/g' ./target/linux/x86/Makefile
-    log_info "内核版本已切换为 6.6"
+    sed -i 's/KERNEL_PATCHVER:=\([0-9]\+\)\.\([0-9]\+\)/KERNEL_PATCHVER:=6.1/g' ./target/linux/x86/Makefile
+    sed -i 's/KERNEL_TESTING_PATCHVER:=\([0-9]\+\)\.\([0-9]\+\)/KERNEL_TESTING_PATCHVER:=6.1/g' ./target/linux/x86/Makefile
+    log_info "内核版本已切换为 6.1"
 else
     log_warn "未找到 Makefile，跳过内核版本设置"
-fi
-
-# 修改固件分区大小（256MB -> 1024MB）
-if check_file ./target/linux/x86/image/Makefile; then
-    sed -i 's/256/1024/g' ./target/linux/x86/image/Makefile
-    log_info "固件分区大小已修改为 1024MB"
-else
-    log_warn "未找到 image/Makefile，跳过分区大小设置"
 fi
 
 # 使用自定义openclash
