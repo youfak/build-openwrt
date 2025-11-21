@@ -46,6 +46,7 @@ log_info "开始配置内核版本 5.10（纯净版）..."
 # 指定编译版本
 if check_file ./target/linux/x86/Makefile; then
     sed -i 's/KERNEL_PATCHVER:=\([0-9]\+\)\.\([0-9]\+\)/KERNEL_PATCHVER:=5.10/g' ./target/linux/x86/Makefile
+    sed -i 's/KERNEL_TESTING_PATCHVER:=\([0-9]\+\)\.\([0-9]\+\)/KERNEL_TESTING_PATCHVER:=5.10/g' ./target/linux/x86/Makefile
     log_info "内核版本已切换为 5.10"
     
     # 添加默认包（网卡驱动、存储设备、工具等）
