@@ -143,7 +143,13 @@ else
     exit 1
 fi
 
-# 使用自定义主题（已注释，按需启用）
-git clone https://github.com/jerrykuku/luci-theme-argon.git  package/luci-theme-argon
+log_info "下载自定义主题..."
+if [ -d "package/luci-theme-argon" ]; then
+    log_warn "自定义主题目录已存在，跳过下载"
+else
+    git clone https://github.com/jerrykuku/luci-theme-argon.git  package/luci-theme-argon
+    log_info "自定义主题下载完成"
+fi
+
 
 log_info "DIY 脚本 part 1 执行完成！"
