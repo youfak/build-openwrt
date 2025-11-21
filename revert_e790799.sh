@@ -34,7 +34,7 @@ if git cat-file -e "${COMMIT_HASH}^{commit}" 2>/dev/null; then
     log_info "找到提交 $COMMIT_HASH，开始撤销..."
 else
     log_error "提交 $COMMIT_HASH 不存在，请确认源代码是否包含该提交"
-    exit 1
+    # exit 1
 fi
 
 # 执行 revert
