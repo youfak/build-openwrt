@@ -52,6 +52,49 @@ else
     log_warn "未找到 Makefile，跳过内核版本设置"
 fi
 
+
+# 下载 OpenClash
+log_info "下载 OpenClash..."
+if [ -d "package/luci-app-openclash" ]; then
+    log_warn "OpenClash 目录已存在，跳过下载"
+else
+    mkdir -p package/luci-app-openclash
+    cd package/luci-app-openclash
+    git init || { log_error "Git 初始化失败"; cd -; exit 1; }
+    git remote add -f origin https://github.com/vernesong/OpenClash.git || { log_error "添加远程仓库失败"; cd -; rm -rf package/luci-app-openclash; exit 1; }
+    git config core.sparsecheckout true
+    echo "luci-app-openclash" >> .git/info/sparse-checkout
+    git pull --depth 1 origin master || { log_error "OpenClash 下载失败"; cd -; rm -rf package/luci-app-openclash; exit 1; }
+    mv luci-app-openclash/* . 2>/dev/null || true
+    mv luci-app-openclash/.* . 2>/dev/null || true
+    rmdir luci-app-openclash 2>/dev/null || true
+    rm -rf .git .gitignore
+    log_info "OpenClash 下载完成"
+    cd -
+fi
+
+# 配置 feeds
+log_info "配置 feed 源..."
+if check_file feeds.conf.default; then
+    add_feed() {
+        local name="$1"
+        local url="$2"
+        if ! grep -q "$url" feeds.conf.default; then
+            echo "src-git $name $url" >> feeds.conf.default
+            log_info "已添加 feed 源: $name"
+        else
+            log_warn "feed 源已存在: $name"
+        fi
+    }
+
+    # 第三方源
+    add_feed "kenzo" "https://github.com/kenzok8/openwrt-packages"
+    add_feed "small" "https://github.com/kenzok8/small"
+else
+    log_error "feeds.conf.default 文件不存在"
+    exit 1
+fi
+
 log_info "Feed 源配置完成"
 
 log_info "下载自定义主题..."
