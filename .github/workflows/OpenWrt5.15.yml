@@ -18,7 +18,7 @@ env:
   CONFIG_FILE: 5.15.config
   DIY_P1_SH: diy5.15.sh
   DIY_P2_SH: diy-part2.sh
-  REVERT_E790799_SH: revert_e790799.sh
+  CLEANUP_FEEDS_SH: cleanup-feeds.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_COWTRANSFER: false
@@ -156,6 +156,13 @@ jobs:
 
       - name: 下载插件
         run: cd openwrt && ./scripts/feeds update -a
+
+      - name: 清理和配置 feeds
+        run: |
+          # 设置执行权限
+          chmod +x $CLEANUP_FEEDS_SH
+          cd openwrt
+          $GITHUB_WORKSPACE/$CLEANUP_FEEDS_SH
 
       - name: 读取插件
         run: cd openwrt && ./scripts/feeds install -a

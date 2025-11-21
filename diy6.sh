@@ -129,15 +129,6 @@ if check_file feeds.conf.default; then
     # 第三方源
     add_feed "kenzo" "https://github.com/kenzok8/openwrt-packages"
     add_feed "small" "https://github.com/kenzok8/small"
-
-    echo -e "\n=== [3] 删除冲突 luci/mosdns ==="
-    rm -rf feeds/luci/applications/luci-app-mosdns 2>/dev/null || true
-    echo -e "\n=== [4] 删除重复/冲突网络代理插件 ==="
-    rm -rf feeds/packages/net/{alist,adguardhome,mosdns,xray*,v2ray*,sing*,smartdns}
-    rm -rf feeds/packages/utils/v2dat
-    echo -e "\n=== [5] 替换 Golang → 1.25（支持 sing-box & hysteria2） ==="
-    rm -rf feeds/packages/lang/golang
-    git clone https://github.com/kenzok8/golang -b 1.25 feeds/packages/lang/golang
 else
     log_error "feeds.conf.default 文件不存在"
     exit 1
