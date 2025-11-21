@@ -158,3 +158,102 @@ exit 0
 # svn co https://github.com/kiddin9/openwrt-packages/trunk/adguardhome feeds/packages/net/adguardhome
 # svn co https://github.com/kiddin9/openwrt-packages/trunk/luci-app-adguardhome package/feeds/kenzo/luci-app-adguardhome
 
+# #!/bin/bash
+# # ======================================
+# # OpenWrt DIY Part 2
+# # (执行于 feeds update/install 后)
+# # 自定义界面、版本号、固件名优化
+# # ======================================
+
+# echo ">>> 正在执行 diy-part2.sh ..."
+
+# # -------------------------------
+# # 1. 修改默认主题为 Argon
+# # -------------------------------
+# echo ">>> 设置默认主题为 Argon"
+# sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
+
+# # 删除默认主题（可选）
+# rm -rf package/lean/luci-theme-bootstrap
+
+# # -------------------------------
+# # 2. 修改主题背景（可选）
+# # -------------------------------
+# # cp -f files/bg.jpg package/lean/luci-theme-argon/htdocs/luci-static/argon/img/bg.jpg
+
+# # -------------------------------
+# # 3. 修改默认 IP / 主机名
+# # -------------------------------
+# echo ">>> 修改默认 IP / 主机名"
+# sed -i 's/192.168.1.1/192.168.10.1/g' package/base-files/files/bin/config_generate
+# sed -i 's/hostname='OpenWrt'/hostname='MyRouter'/g' package/base-files/files/bin/config_generate
+
+# # -------------------------------
+# # 4. 修改版本号（加入构建时间）
+# # -------------------------------
+# echo ">>> 替换版本号信息"
+
+# ver_date=$(date +"%Y.%m.%d")
+# build_user="Compiled by YOURNAME"
+# sed -i "s/OpenWrt/OpenWrt $ver_date ($build_user)/g" package/base-files/files/etc/openwrt_release
+
+# # immortalWrt Lean 支持格式
+# sed -i "s/DISTRIB_DESCRIPTION='*'/DISTRIB_DESCRIPTION='OpenWrt $ver_date by YOURNAME'/g" \
+#     package/base-files/files/etc/openwrt_release 2>/dev/null
+
+# # -------------------------------
+# # 5. 精简默认插件（可选）
+# # -------------------------------
+# echo ">>> 移除自带但无用 LuCI 插件"
+# rm -rf feeds/luci/applications/luci-app-upnp
+# rm -rf feeds/luci/applications/luci-app-firewall
+
+# # -------------------------------
+# # 6. 添加自定义 LuCI 应用（可选）
+# # -------------------------------
+# echo ">>> 添加常用自定义 LuCI 插件"
+# git clone https://github.com/jerrykuku/luci-app-argon-config package/luci-app-argon-config
+
+# # -------------------------------
+# # 7. 固件命名美化
+# # -------------------------------
+# echo ">>> 固件名美化设置"
+
+# # 在 include/image.mk 中自动加入日期
+# sed -i "s/IMAGE_SUFFIX:=/IMAGE_SUFFIX:=-${ver_date}-KERNEL/g" include/image.mk
+
+# # -------------------------------
+# # 8. 编译优化（拉满 Performance）
+# # -------------------------------
+# echo ">>> 性能优化（内核 + 系统）"
+
+# # 内核编译优化
+# sed -i "/CONFIG_KERNEL_BUILD_USER=/c\CONFIG_KERNEL_BUILD_USER=\"YOURNAME\"" .config 2>/dev/null
+# sed -i "/CONFIG_KERNEL_BUILD_DOMAIN=/c\CONFIG_KERNEL_BUILD_DOMAIN=\"GitHub\"" .config 2>/dev/null
+
+# # GCC 优化
+# echo "
+# # OpenWrt 优化参数
+# export CC='gcc -O3'
+# export CXX='g++ -O3'
+# " >> ~/.bashrc
+
+# # -------------------------------
+# # 9. 系统运行优化（sysctl）
+# # -------------------------------
+# echo ">>> 添加系统 sysctl 优化"
+# mkdir -p files/etc/sysctl.d
+# cat > files/etc/sysctl.d/99-custom.conf <<EOF
+# net.core.default_qdisc=fq
+# net.ipv4.tcp_congestion_control=bbr
+# net.ipv4.tcp_fastopen=3
+# fs.file-max=1024000
+# EOF
+
+# # -------------------------------
+# # 10. 删除多余默认仓库（可选）
+# # -------------------------------
+# echo ">>> 清理无用目录（可选）"
+# rm -rf package/feeds/packages/luci-app-dockerman
+
+# echo ">>> diy-part2.sh 执行完毕!"
