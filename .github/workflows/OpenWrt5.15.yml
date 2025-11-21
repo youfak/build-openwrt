@@ -18,6 +18,7 @@ env:
   CONFIG_FILE: 5.15.config
   DIY_P1_SH: diy5.15.sh
   DIY_P2_SH: diy-part2.sh
+  REVERT_E790799_SH: revert_e790799.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_COWTRANSFER: false
@@ -142,6 +143,10 @@ jobs:
         working-directory: ./
         run: |
           git clone --depth=1 $REPO_URL -b $REPO_BRANCH openwrt
+      - name: 撤销 OpenWrt 内核提交 e790799（BRCM Fullcone NAT1 支持）
+        run: |
+          cd openwrt
+          $GITHUB_WORKSPACE/$REVERT_E790799_SH
 
       - name: 加载自定义设置
         run: |
