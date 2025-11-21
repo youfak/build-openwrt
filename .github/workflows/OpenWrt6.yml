@@ -150,13 +150,6 @@ jobs:
         working-directory: ./
         run: |
           git clone --depth=1 $REPO_URL -b $REPO_BRANCH openwrt
-      
-      - name: 撤销 OpenWrt 内核提交 e790799（BRCM Fullcone NAT1 支持）
-        run: |
-          # 设置执行权限
-          chmod +x $REVERT_E790799_SH
-          cd openwrt
-          $GITHUB_WORKSPACE/$REVERT_E790799_SH
 
       - name: 加载自定义设置
         run: |
