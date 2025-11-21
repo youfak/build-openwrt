@@ -67,39 +67,6 @@ else
     log_warn "未找到 image/Makefile，跳过分区大小设置"
 fi
 
-# 添加 feed 源（优化：检查是否已存在，避免重复添加）
-log_info "配置 feed 源..."
-
-if check_file feeds.conf.default; then
-    # 检查并添加 kenzo feed
-    if ! grep -q "kenzok8/openwrt-packages" feeds.conf.default; then
-        sed -i '1i src-git kenzo https://github.com/kenzok8/openwrt-packages' feeds.conf.default
-        log_info "已添加 kenzo feed 源"
-    else
-        log_warn "kenzo feed 源已存在，跳过"
-    fi
-    
-    # 检查并添加 small feed
-    if ! grep -q "kenzok8/small" feeds.conf.default; then
-        sed -i '2i src-git small https://github.com/kenzok8/small' feeds.conf.default
-        log_info "已添加 small feed 源"
-    else
-        log_warn "small feed 源已存在，跳过"
-    fi
-    
-    # 检查并添加 helloworld feed
-    if ! grep -q "helloworld" feeds.conf.default; then
-        sed -i "/helloworld/d" feeds.conf.default
-        echo "src-git helloworld https://github.com/fw876/helloworld.git" >> feeds.conf.default
-        log_info "已添加 helloworld feed 源"
-    else
-        log_warn "helloworld feed 源已存在，跳过"
-    fi
-else
-    log_error "feeds.conf.default 文件不存在"
-    exit 1
-fi
-
 log_info "Feed 源配置完成"
 
 log_info "DIY 脚本 part 1 执行完成！"

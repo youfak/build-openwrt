@@ -111,14 +111,34 @@ else
     cd -
 fi
 
+# 配置 feeds
+log_info "配置 feed 源..."
+if check_file feeds.conf.default; then
+    add_feed() {
+        local name="$1"
+        local url="$2"
+        if ! grep -q "$url" feeds.conf.default; then
+            echo "src-git $name $url" >> feeds.conf.default
+            log_info "已添加 feed 源: $name"
+        else
+            log_warn "feed 源已存在: $name"
+        fi
+    }
 
-# 写入 Lean 官方源
-cat > feeds.conf.default <<'EOF'
-src-git packages https://github.com/coolsnowwolf/packages
-src-git luci https://github.com/coolsnowwolf/luci
-src-git routing https://github.com/coolsnowwolf/routing
-src-git telephony https://github.com/coolsnowwolf/telephony
-EOF
+    # 官方源（保留）
+    add_feed "packages" "https://github.com/openwrt/packages.git"
+    add_feed "luci" "https://github.com/openwrt/luci.git"
+    add_feed "routing" "https://git.openwrt.org/feed/routing.git"
+    add_feed "telephony" "https://git.openwrt.org/feed/telephony.git"
+
+    # # 第三方源
+    # add_feed "kenzo" "https://github.com/kenzok8/openwrt-packages"
+    # add_feed "small" "https://github.com/kenzok8/small"
+    # add_feed "helloworld" "https://github.com/fw876/helloworld.git"
+else
+    log_error "feeds.conf.default 文件不存在"
+    exit 1
+fi
 
 # 使用自定义主题（已注释，按需启用）
 git clone https://github.com/jerrykuku/luci-theme-argon.git  package/luci-theme-argon
