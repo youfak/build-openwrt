@@ -185,14 +185,6 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID || '' }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN || '' }}
 
-      - name: 设置 ccache 缓存
-        uses: actions/cache@v4
-        with:
-          path: /workdir/openwrt/.ccache
-          key: ccache-${{ runner.os }}-${{ hashFiles('**/5.15.config') }}
-          restore-keys: |
-            ccache-${{ runner.os }}-
-
       - name: 下载安装包
         id: package
         run: |
