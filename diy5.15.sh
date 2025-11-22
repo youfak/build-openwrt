@@ -40,6 +40,25 @@ else
     log_warn "未找到 Makefile，跳过内核版本设置"
 fi
 
+function git_sparse_clone() {
+  branch="$1" repourl="$2" && shift 2
+  git clone --depth=1 -b $branch --single-branch --filter=blob:none --sparse $repourl
+  repodir=$(echo $repourl | awk -F '/' '{print $(NF)}')
+  cd $repodir && git sparse-checkout set $@
+  mv -f $@ ../package
+  cd .. && rm -rf $repodir
+}
+
+function add_feeds() {
+  local name="$1"
+  local url="$2"
+  if ! grep -q "$url" feeds.conf.default; then
+    sed -i "1i src-git $name $url" feeds.conf.default
+    log_info "已将自定义 feed 插入顶部: $name"
+  else
+    log_warn "feed 已存在: $name"
+  fi
+}
 
 # 下载 OpenClash
 log_info "下载 OpenClash..."
@@ -65,17 +84,6 @@ fi
 # 配置 feeds
 log_info "配置 feed 源..."
 if check_file feeds.conf.default; then
-    add_feed() {
-        local name="$1"
-        local url="$2"
-        if ! grep -q "$url" feeds.conf.default; then
-            sed -i "1i src-git $name $url" feeds.conf.default
-            log_info "已将自定义 feed 插入顶部: $name"
-        else
-            log_warn "feed 已存在: $name"
-        fi
-    }
-
     # 第三方源
     add_feed "kenzo" "https://github.com/kenzok8/openwrt-packages"
     add_feed "small" "https://github.com/kenzok8/small"
@@ -90,8 +98,13 @@ log_info "下载自定义主题..."
 if [ -d "package/luci-theme-argon" ]; then
     log_warn "自定义主题目录已存在，跳过下载"
 else
-    git clone https://github.com/jerrykuku/luci-theme-argon.git  package/luci-theme-argon
+    git clone --depth=1  https://github.com/jerrykuku/luci-theme-argon.git  package/luci-theme-argon
     log_info "自定义主题下载完成"
 fi
+
+# iStore
+git_sparse_clone main https://github.com/linkease/istore-ui app-store-ui
+git_sparse_clone main https://github.com/linkease/istore luci
+
 
 log_info "DIY 脚本 part 1 执行完成！"
