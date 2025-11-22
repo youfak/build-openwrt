@@ -60,6 +60,7 @@ else
     # 使用 git sparse checkout 下载 OpenClash（官方推荐方法）
     mkdir -p package/luci-app-openclash
     cd package/luci-app-openclash
+    git config --global advice.defaultBranchName false 2>/dev/null || true
     git init || {
         log_error "Git 初始化失败"
         cd -

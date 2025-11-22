@@ -60,6 +60,7 @@ if [ -d "package/luci-app-openclash" ]; then
 else
     mkdir -p package/luci-app-openclash
     cd package/luci-app-openclash
+    git config --global advice.defaultBranchName false 2>/dev/null || true
     git init || { log_error "Git 初始化失败"; cd -; exit 1; }
     git remote add -f origin https://github.com/vernesong/OpenClash.git || { log_error "添加远程仓库失败"; cd -; rm -rf package/luci-app-openclash; exit 1; }
     git config core.sparsecheckout true
