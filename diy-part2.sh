@@ -39,6 +39,34 @@ safe_sed() {
 log_info "开始执行 DIY 脚本 part 2 ..."
 
 # ============================================================
+# 0. 编译 po2lmo 工具（OpenClash 需要）
+# ============================================================
+PO2LMO_DIR="package/luci-app-openclash/tools/po2lmo"
+if [ -d "$PO2LMO_DIR" ]; then
+    log_info "检查并编译 po2lmo 工具..."
+    cd "$PO2LMO_DIR"
+    # 检查 po2lmo 是否已存在
+    if [ ! -f "po2lmo" ] && ! command -v po2lmo >/dev/null 2>&1; then
+        log_info "编译 po2lmo..."
+        if make >/dev/null 2>&1; then
+            # 尝试安装（在 GitHub Actions 中可能不需要 sudo）
+            if make install >/dev/null 2>&1 || sudo make install >/dev/null 2>&1; then
+                log_info "po2lmo 编译并安装成功"
+            else
+                log_warn "po2lmo 编译成功但安装失败（构建系统会自动处理）"
+            fi
+        else
+            log_warn "po2lmo 编译失败（可能已包含在构建系统中，将自动编译）"
+        fi
+    else
+        log_info "po2lmo 已存在，跳过编译"
+    fi
+    cd - >/dev/null
+else
+    log_warn "未找到 po2lmo 目录，跳过（OpenClash 可能使用其他方式）"
+fi
+
+# ============================================================
 # 1. 修改默认 LAN IP（如不存在才修改）
 # ============================================================
 TARGET_IP="192.168.99.1"
