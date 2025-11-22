@@ -1,14 +1,16 @@
-# OpenWrt R24-X86-64云编译项目
+# OpenWrt 23.05 X86-64 云编译项目
 
 ## 固件来源：
 
-P3TERX云编译脚本地址：[https://github.com/P3TERX/Actions-OpenWrt](https://github.com/P3TERX/Actions-OpenWrt)
+- **OpenWrt 官方源码**：[https://github.com/openwrt/openwrt/tree/openwrt-23.05](https://github.com/openwrt/openwrt/tree/openwrt-23.05)
+- **P3TERX 云编译脚本**：[https://github.com/P3TERX/Actions-OpenWrt](https://github.com/P3TERX/Actions-OpenWrt)
 
-lean固件源码地址：[https://github.com/coolsnowwolf/lede](https://github.com/coolsnowwolf/lede)
+## 插件来源：
 
-插件引用：[luci-theme-argon](https://github.com/jerrykuku/luci-theme-argon.git)、[istore](https://github.com/linkease/istore.git)。
+- **LuCI 主题**：[luci-theme-argon](https://github.com/jerrykuku/luci-theme-argon.git)
+- **第三方插件源**：[kenzok8/openwrt-packages](https://github.com/kenzok8/openwrt-packages)
 
-由衷感谢所有为openwrt无私奉献的大佬们。
+由衷感谢所有为 OpenWrt 无私奉献的开发者们。
 
 ## 自定义源
 
@@ -18,13 +20,17 @@ lean固件源码地址：[https://github.com/coolsnowwolf/lede](https://github.c
 
 ## 固件说明：
 
-lean源码版本，内核为***5.10***版、***5.15***、***6.1***版
+基于 **OpenWrt 23.05** 官方稳定版本编译，内核版本支持：
+- **5.10** - 稳定版本
+- **5.15** - 稳定版本  
+- **6.1/6.6** - 较新版本
 
-支持IPV6
-
-该固件相对说是纯静的基乎没有任何的插件，软件包可用空间大约800MB左右
-
-自动检查lede更新如果有就自动更新，手动不定时更新
+### 特性：
+- ✅ 基于官方 OpenWrt 23.05 LTS 版本
+- ✅ 支持 IPv6
+- ✅ 包含常用第三方插件（通过 feeds 添加）
+- ✅ 软件包可用空间约 800MB+
+- ✅ 自动检查源码更新并触发编译
 
 > `管理ip：192.168.99.1 密码：为空`
 
@@ -65,7 +71,7 @@ swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
 ### 1. 克隆 OpenWrt 源码
 
 ```bash
-git clone https://github.com/coolsnowwolf/lede.git openwrt
+git clone https://github.com/openwrt/openwrt.git -b openwrt-23.05 openwrt
 cd openwrt
 ```
 
@@ -178,8 +184,10 @@ sudo apt install <package-name>
 ## 参考资源
 
 - [OpenWrt 官方文档](https://openwrt.org/docs/guide-developer/build-system/install-buildsystem)
-- [Lean's OpenWrt 源码](https://github.com/coolsnowwolf/lede)
+- [OpenWrt 官方源码](https://github.com/openwrt/openwrt)
+- [OpenWrt 23.05 发布说明](https://openwrt.org/releases/23.05/start)
 - [P3TERX Actions-OpenWrt](https://github.com/P3TERX/Actions-OpenWrt)
+- [第三方插件源 (kenzok8)](https://github.com/kenzok8/openwrt-packages)
 
 
 

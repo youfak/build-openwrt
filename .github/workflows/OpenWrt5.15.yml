@@ -12,8 +12,8 @@ on:
   #   - cron: 0 22 */3 * *
 
 env:
-  REPO_URL: https://github.com/coolsnowwolf/lede
-  REPO_BRANCH: master
+  REPO_URL: https://github.com/openwrt/openwrt
+  REPO_BRANCH: openwrt-23.05
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: 5.15.config
   DIY_P1_SH: diy5.15.sh
@@ -271,7 +271,7 @@ jobs:
           echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
           touch release.txt
           echo "功能介绍：含定时重拨、openclash、iStore、广告屏蔽大师 Plus+等少量插件。" >> release.txt
-          echo "[固件源码](https://github.com/coolsnowwolf/lede)" >> release.txt
+          echo "[固件源码](https://github.com/openwrt/openwrt/tree/openwrt-23.05)" >> release.txt
           echo "由衷感谢所有为openwrt无私奉献的大佬们" >> release.txt
           echo "📥 固件下载" >> release.txt
           [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
