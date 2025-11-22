@@ -201,7 +201,7 @@ jobs:
           echo "开始单线程编译（推荐第一次编译使用）"
           echo "当前磁盘使用："
           df -hT
-          make V=s -j1
+          make V=sc -j1
           echo "status=success" >> $GITHUB_OUTPUT
           grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
           [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
