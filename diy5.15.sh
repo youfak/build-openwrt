@@ -40,13 +40,6 @@ else
     log_warn "未找到 Makefile，跳过内核版本设置"
 fi
 
-# 修改固件分区大小（256MB -> 1024MB）
-if check_file ./target/linux/x86/image/Makefile; then
-    sed -i 's/256/1024/g' ./target/linux/x86/image/Makefile
-    log_info "固件分区大小已修改为 1024MB"
-else
-    log_warn "未找到 image/Makefile，跳过分区大小设置"
-fi
 
 # 下载 OpenClash
 log_info "下载 OpenClash..."
