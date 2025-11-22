@@ -12,13 +12,12 @@ on:
   #   - cron: 0 22 */3 * *
 
 env:
-  REPO_URL: https://github.com/openwrt/openwrt
-  REPO_BRANCH: openwrt-23.05
+  REPO_URL: https://github.com/coolsnowwolf/lede
+  REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: x64.config
+  CONFIG_FILE: configs/6.x.config
   DIY_P1_SH: diy6.sh
   DIY_P2_SH: diy-part2.sh
-  REVERT_E790799_SH: revert_e790799.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_COWTRANSFER: false

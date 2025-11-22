@@ -2,7 +2,7 @@
 
 ## 固件来源：
 
-- **OpenWrt 官方源码**：[https://github.com/openwrt/openwrt/tree/openwrt-23.05](https://github.com/openwrt/openwrt/tree/openwrt-23.05)
+- **KEDE源码**：[源码]( https://github.com/coolsnowwolf/lede)
 - **P3TERX 云编译脚本**：[https://github.com/P3TERX/Actions-OpenWrt](https://github.com/P3TERX/Actions-OpenWrt)
 
 ## 插件来源：
@@ -26,7 +26,7 @@
 - **6.1/6.6** - 较新版本
 
 ### 特性：
-- ✅ 基于官方 OpenWrt 23.05 LTS 版本
+- ✅ 基于LEDE版本
 - ✅ 支持 IPv6
 - ✅ 包含常用第三方插件（通过 feeds 添加）
 - ✅ 软件包可用空间约 800MB+
@@ -71,8 +71,11 @@ swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
 ### 1. 克隆 OpenWrt 源码
 
 ```bash
-git clone https://github.com/openwrt/openwrt.git -b openwrt-23.05 openwrt
-cd openwrt
+git clone https://github.com/coolsnowwolf/lede
+cd lede
+./scripts/feeds update -a
+./scripts/feeds install -a
+make menuconfig
 ```
 
 ### 2. 更新 feeds
