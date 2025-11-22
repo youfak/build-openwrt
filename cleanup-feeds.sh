@@ -13,7 +13,7 @@ rm -rf feeds/luci/applications/luci-app-mosdns 2>/dev/null || true
 
 # 删除重复/冲突网络代理插件
 echo -e "\n=== [4] 删除重复/冲突网络代理插件 ==="
-rm -rf feeds/packages/net/{alist,adguardhome,mosdns,xray*,v2ray*,sing*,smartdns,shadowsocks*,simple-obfs,tcping,trojan-plus,tuic-client,v2ray-plugin,xray-plugin,geoview,shadow-tls}
+rm -rf feeds/packages/net/{alist,adguardhome,mosdns,xray*,v2ray*,v2ray*,sing*,smartdns}
 rm -rf feeds/packages/utils/v2dat
 
 # 替换 Golang → 1.25（支持 sing-box & hysteria2）
