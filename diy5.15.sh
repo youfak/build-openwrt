@@ -82,17 +82,17 @@ else
 fi
 
 # 配置 feeds
-log_info "配置 feed 源..."
-if check_file feeds.conf.default; then
-    # 第三方源
-    add_feed "kenzo" "https://github.com/kenzok8/openwrt-packages"
-    add_feed "small" "https://github.com/kenzok8/small"
-else
-    log_error "feeds.conf.default 文件不存在"
-    exit 1
-fi
+# log_info "配置 feed 源..."
+# if check_file feeds.conf.default; then
+#     # 第三方源
+#     add_feed "kenzo" "https://github.com/kenzok8/openwrt-packages"
+#     add_feed "small" "https://github.com/kenzok8/small"
+# else
+#     log_error "feeds.conf.default 文件不存在"
+#     exit 1
+# fi
 
-log_info "Feed 源配置完成"
+# log_info "Feed 源配置完成"
 
 log_info "下载自定义主题..."
 if [ -d "package/luci-theme-argon" ]; then
