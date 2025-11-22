@@ -12,9 +12,9 @@ lean固件源码地址：[https://github.com/coolsnowwolf/lede](https://github.c
 
 ## 自定义源
 
-####自定义源要放在feeds.conf.default文件最顶部
-####自定义源要放在feeds.conf.default文件最顶部
-####自定义源要放在feeds.conf.default文件最顶部
+#### 自定义源要放在feeds.conf.default文件最顶部
+#### 自定义源要放在feeds.conf.default文件最顶部
+#### 自定义源要放在feeds.conf.default文件最顶部
 
 ## 固件说明：
 
