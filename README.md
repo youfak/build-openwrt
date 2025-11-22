@@ -1,4 +1,4 @@
-# OpenWrt R23-X86-64云编译项目
+# OpenWrt R24-X86-64云编译项目
 
 ## 固件来源：
 
@@ -9,6 +9,12 @@ lean固件源码地址：[https://github.com/coolsnowwolf/lede](https://github.c
 插件引用：[luci-theme-argon](https://github.com/jerrykuku/luci-theme-argon.git)、[istore](https://github.com/linkease/istore.git)。
 
 由衷感谢所有为openwrt无私奉献的大佬们。
+
+## 自定义源
+
+####自定义源要放在feeds.conf.default文件最顶部
+####自定义源要放在feeds.conf.default文件最顶部
+####自定义源要放在feeds.conf.default文件最顶部
 
 ## 固件说明：
 
