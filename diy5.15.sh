@@ -75,10 +75,10 @@ if check_file feeds.conf.default; then
         local name="$1"
         local url="$2"
         if ! grep -q "$url" feeds.conf.default; then
-            echo "src-git $name $url" >> feeds.conf.default
-            log_info "已添加 feed 源: $name"
+            sed -i "1i src-git $name $url" feeds.conf.default
+            log_info "已将自定义 feed 插入顶部: $name"
         else
-            log_warn "feed 源已存在: $name"
+            log_warn "feed 已存在: $name"
         fi
     }
 

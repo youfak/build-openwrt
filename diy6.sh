@@ -96,17 +96,17 @@ else
     cd -
 fi
 
-# 配置 feeds
+# 配置 feeds 自定义源在前面
 log_info "配置 feed 源..."
 if check_file feeds.conf.default; then
     add_feed() {
         local name="$1"
         local url="$2"
         if ! grep -q "$url" feeds.conf.default; then
-            echo "src-git $name $url" >> feeds.conf.default
-            log_info "已添加 feed 源: $name"
+            sed -i "1i src-git $name $url" feeds.conf.default
+            log_info "已将自定义 feed 插入顶部: $name"
         else
-            log_warn "feed 源已存在: $name"
+            log_warn "feed 已存在: $name"
         fi
     }
 
@@ -117,6 +117,7 @@ else
     log_error "feeds.conf.default 文件不存在"
     exit 1
 fi
+
 
 log_info "下载自定义主题..."
 if [ -d "package/luci-theme-argon" ]; then
