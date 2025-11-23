@@ -125,38 +125,6 @@ else
 fi
 
 # ============================================================
-# 2. 默认密码为空
-# ============================================================
-# PASS_FILE="package/base-files/files/etc/shadow"
-
-# if [ -f "$PASS_FILE" ]; then
-#     sed -i "s@.*CYXluq4wUazHjmCDBCqXF*@#&@" "$PASS_FILE"
-#     log_info "默认密码已设置为空"
-# else
-#     log_warn "找不到默认设置文件，跳过密码设置"
-# fi
-
-
-# ============================================================
-# 修改发行人信息
-# ============================================================
-FILE="include/version.mk"
-# 检查文件是否存在
-if [ -f "$FILE" ]; then
-    log_info "正在修改 version.mk …"
-
-    # 修改 VERSION_DIST 默认值
-    sed -i "s/VERSION_DIST:=\$(if \$(CONFIG_VERSION_DIST),\$(CONFIG_VERSION_DIST),ImmortalWrt)/VERSION_DIST:=\$(if \$(CONFIG_VERSION_DIST),\$(CONFIG_VERSION_DIST),YOUFAK)/" $FILE
-
-    # 修改 VERSION_MANUFACTURER 默认值
-    sed -i "s/VERSION_MANUFACTURER:=\$(if \$(CONFIG_VERSION_MANUFACTURER),\$(CONFIG_VERSION_MANUFACTURER),ImmortalWrt)/VERSION_MANUFACTURER:=\$(if \$(CONFIG_VERSION_MANUFACTURER),\$(CONFIG_VERSION_MANUFACTURER),YOUFAK)/" $FILE
-
-    log_info "修改完成！"
-else
-    log_warn "找不到文件：$FILE"
-fi
-
-# ============================================================
 # 5. 优化连接数
 # ============================================================
 SYSCTL_FILE="package/base-files/files/etc/sysctl.conf"
