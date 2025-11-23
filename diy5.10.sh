@@ -52,6 +52,17 @@ else
     log_warn "未找到 Makefile，跳过内核版本设置"
 fi
 
+# 添加 feed 函数
+add_feeds() {
+  local name="$1"
+  local url="$2"
+  if ! grep -q "$url" feeds.conf.default; then
+    sed -i "1i src-git $name $url" feeds.conf.default
+    log_info "已将自定义 feed 插入顶部: $name"
+  else
+    log_warn "feed 已存在: $name"
+  fi
+}
 
 # 下载 OpenClash
 log_info "下载 OpenClash..."
@@ -78,8 +89,8 @@ fi
 log_info "配置 feed 源..."
 if check_file feeds.conf.default; then
     # 第三方源
-    add_feed "kenzo" "https://github.com/kenzok8/openwrt-packages"
-    add_feed "small" "https://github.com/kenzok8/small"
+    add_feeds "kenzo" "https://github.com/kenzok8/openwrt-packages"
+    add_feeds "small" "https://github.com/kenzok8/small"
 else
     log_error "feeds.conf.default 文件不存在"
     exit 1

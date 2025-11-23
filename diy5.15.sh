@@ -61,26 +61,6 @@ else
     log_warn "未找到 Makefile，跳过内核版本设置"
 fi
 
-function git_sparse_clone() {
-  branch="$1" repourl="$2" && shift 2
-  git clone --depth=1 -b $branch --single-branch --filter=blob:none --sparse $repourl
-  repodir=$(echo $repourl | awk -F '/' '{print $(NF)}')
-  cd $repodir && git sparse-checkout set $@
-  mv -f $@ ../package
-  cd .. && rm -rf $repodir
-}
-
-function add_feeds() {
-  local name="$1"
-  local url="$2"
-  if ! grep -q "$url" feeds.conf.default; then
-    sed -i "1i src-git $name $url" feeds.conf.default
-    log_info "已将自定义 feed 插入顶部: $name"
-  else
-    log_warn "feed 已存在: $name"
-  fi
-}
-
 # 下载 OpenClash
 log_info "下载 OpenClash..."
 if [ -d "package/luci-app-openclash" ]; then
@@ -106,8 +86,8 @@ fi
 log_info "配置 feed 源..."
 if check_file feeds.conf.default; then
     # 第三方源
-    add_feed "kenzo" "https://github.com/kenzok8/openwrt-packages"
-    add_feed "small" "https://github.com/kenzok8/small"
+    add_feeds "kenzo" "https://github.com/kenzok8/openwrt-packages"
+    add_feeds "small" "https://github.com/kenzok8/small"
 else
     log_error "feeds.conf.default 文件不存在"
     exit 1
