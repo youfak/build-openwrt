@@ -107,5 +107,24 @@ fi
 git_sparse_clone main https://github.com/linkease/istore-ui app-store-ui
 git_sparse_clone main https://github.com/linkease/istore luci
 
+# 添加 TurboACC (SFE加速)
+log_info "添加 TurboACC (SFE加速)..."
+if [ -f "add_turboacc.sh" ]; then
+    log_warn "TurboACC 脚本已存在，跳过下载"
+else
+    curl -sSL https://raw.githubusercontent.com/chenmozhijin/turboacc/luci/add_turboacc.sh -o add_turboacc.sh || {
+        log_error "TurboACC 脚本下载失败"
+        exit 1
+    }
+    log_info "TurboACC 脚本下载完成"
+fi
+
+if [ -f "add_turboacc.sh" ]; then
+    chmod +x add_turboacc.sh
+    bash add_turboacc.sh || {
+        log_warn "TurboACC 安装失败，继续执行..."
+    }
+    log_info "TurboACC 安装完成"
+fi
 
 log_info "DIY 脚本 part 1 执行完成！"

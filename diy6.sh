@@ -61,13 +61,13 @@ add_feeds() {
   fi
 }
 
-log_info "开始配置内核版本 6.6..."
+log_info "开始配置内核版本 6.1..."
 
 # 切换固件版本
 if check_file ./target/linux/x86/Makefile; then
-    sed -i 's/KERNEL_PATCHVER:=\([0-9]\+\)\.\([0-9]\+\)/KERNEL_PATCHVER:=6.6/g' ./target/linux/x86/Makefile
-    sed -i 's/KERNEL_TESTING_PATCHVER:=\([0-9]\+\)\.\([0-9]\+\)/KERNEL_TESTING_PATCHVER:=6.6/g' ./target/linux/x86/Makefile
-    log_info "内核版本已切换为 6.6"
+    sed -i 's/KERNEL_PATCHVER:=\([0-9]\+\)\.\([0-9]\+\)/KERNEL_PATCHVER:=6.1/g' ./target/linux/x86/Makefile
+    sed -i 's/KERNEL_TESTING_PATCHVER:=\([0-9]\+\)\.\([0-9]\+\)/KERNEL_TESTING_PATCHVER:=6.1/g' ./target/linux/x86/Makefile
+    log_info "内核版本已切换为 6.1"
 else
     log_warn "未找到 Makefile，跳过内核版本设置"
 fi
@@ -126,5 +126,24 @@ else
     log_info "自定义主题下载完成"
 fi
 
+# 添加 TurboACC (SFE加速)
+log_info "添加 TurboACC (SFE加速)..."
+if [ -f "add_turboacc.sh" ]; then
+    log_warn "TurboACC 脚本已存在，跳过下载"
+else
+    curl -sSL https://raw.githubusercontent.com/chenmozhijin/turboacc/luci/add_turboacc.sh -o add_turboacc.sh || {
+        log_error "TurboACC 脚本下载失败"
+        exit 1
+    }
+    log_info "TurboACC 脚本下载完成"
+fi
+
+if [ -f "add_turboacc.sh" ]; then
+    chmod +x add_turboacc.sh
+    bash add_turboacc.sh || {
+        log_warn "TurboACC 安装失败，继续执行..."
+    }
+    log_info "TurboACC 安装完成"
+fi
 
 log_info "DIY 脚本 part 1 执行完成！"
