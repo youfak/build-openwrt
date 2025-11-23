@@ -84,6 +84,47 @@ else
 fi
 
 # ============================================================
+# 1.1. 修改时区配置
+# ============================================================
+if [ -f "$FILE_IP" ]; then
+    # 查找并修改 timezone 配置（通常在 315 行附近）
+    # 匹配各种可能的格式：timezone='UTC' 或 timezone="UTC" 等
+    if grep -qE "set system\.@system\[-1\]\.timezone=" "$FILE_IP"; then
+        # 如果已存在 timezone 配置，则替换
+        sed -i "s|set system\.@system\[-1\]\.timezone=.*|set system.@system[-1].timezone='CST-8'|g" "$FILE_IP"
+        log_info "时区已修改为 CST-8"
+    else
+        # 如果不存在，查找 system 配置区域并在合适位置添加
+        # 查找包含 system.@system[-1] 的配置行，在其后添加时区设置
+        TIMEZONE_LINE=$(grep -n "set system\.@system\[-1\]" "$FILE_IP" | tail -1 | cut -d: -f1)
+        if [ -n "$TIMEZONE_LINE" ]; then
+            # 在找到的行后插入时区配置（使用 sed 的 a 命令，保持原有缩进格式）
+            sed -i "${TIMEZONE_LINE}a\		set system.@system[-1].timezone='CST-8'" "$FILE_IP"
+            log_info "时区配置已添加为 CST-8"
+        else
+            log_warn "未找到 system 配置区域，跳过时区配置"
+        fi
+    fi
+    
+    # 添加或修改 zonename 配置
+    if grep -qE "set system\.@system\[-1\]\.zonename=" "$FILE_IP"; then
+        sed -i "s|set system\.@system\[-1\]\.zonename=.*|set system.@system[-1].zonename='Asia/Shanghai'|g" "$FILE_IP"
+        log_info "时区名称已修改为 Asia/Shanghai"
+    else
+        # 在 timezone 配置后添加 zonename
+        ZONENAME_LINE=$(grep -n "set system\.@system\[-1\]\.timezone=" "$FILE_IP" | tail -1 | cut -d: -f1)
+        if [ -n "$ZONENAME_LINE" ]; then
+            sed -i "${ZONENAME_LINE}a\		set system.@system[-1].zonename='Asia/Shanghai'" "$FILE_IP"
+            log_info "时区名称已添加为 Asia/Shanghai"
+        else
+            log_warn "未找到 timezone 配置，跳过 zonename 配置"
+        fi
+    fi
+else
+    log_warn "未找到 config_generate，跳过时区修改"
+fi
+
+# ============================================================
 # 2. 默认密码为空
 # ============================================================
 PASS_FILE="package/lean/default-settings/files/zzz-default-settings"
