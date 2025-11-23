@@ -1,4 +1,4 @@
-name: OpenWrt-6.1
+name: OpenWrt-6.6
 
 on:
   repository_dispatch:
@@ -13,9 +13,9 @@ on:
 
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
-  REPO_BRANCH: openwrt-23.05
+  REPO_BRANCH: openwrt-24.10
   FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: configs/6.x.config
+  CONFIG_FILE: configs/6.6.config
   DIY_P1_SH: diy6.sh
   DIY_P2_SH: diy-part2.sh
   UPLOAD_BIN_DIR: false
@@ -224,8 +224,8 @@ jobs:
           rm -rf packages
           # 重命名所有文件，添加内核版本前缀（排除已包含版本号的文件）
           for file in *; do
-            if [ -f "$file" ] && [[ "$file" != openwrt-6.1-* ]] && [[ "$file" != packages ]]; then
-              mv "$file" "openwrt-6.1-$file"
+            if [ -f "$file" ] && [[ "$file" != openwrt-6.6-* ]] && [[ "$file" != packages ]]; then
+              mv "$file" "openwrt-6.6-$file"
             fi
           done
           echo "FIRMWARE=$PWD" >> $GITHUB_ENV
@@ -276,7 +276,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         with:
-          name: ${{ env.FILE_TIME }} 「 openwrt6.1-X86-64 」
+          name: ${{ env.FILE_TIME }} 「 openwrt6.6-X86-64 」
           tag_name: ${{ steps.tag.outputs.release_tag }}
           body_path: release.txt
           files: ${{ env.FIRMWARE }}/*
