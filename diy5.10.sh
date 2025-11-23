@@ -77,17 +77,6 @@ fi
 # 配置 feeds
 log_info "配置 feed 源..."
 if check_file feeds.conf.default; then
-    add_feed() {
-        local name="$1"
-        local url="$2"
-        if ! grep -q "$url" feeds.conf.default; then
-            sed -i "1i src-git $name $url" feeds.conf.default
-            log_info "已将自定义 feed 插入顶部: $name"
-        else
-            log_warn "feed 已存在: $name"
-        fi
-    }
-
     # 第三方源
     add_feed "kenzo" "https://github.com/kenzok8/openwrt-packages"
     add_feed "small" "https://github.com/kenzok8/small"
