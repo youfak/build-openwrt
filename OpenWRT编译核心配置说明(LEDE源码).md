@@ -68,7 +68,14 @@
 |  |  | kmod-kvm-intel (intel处理器) |  |
 |  |  | <span style="color: #FFD700;">**kmod-kvm-x86**</span> |  |
 |  | Wireless Drivers（无线网卡选择） | 按需选择 |  |
-| LuCI | Application | luci-app-sfe (turbo ACC) |  |
+| LuCI | Application | luci-app-turboacc | Turbo ACC 网络加速(支持 Fast Path 或者 硬件 NAT) |
+|  |  | Include Flow Offload | Flow Offload加速(提高路由转发效率) |
+|  |  | Include Shortcut-FE | Shortcut-FE 流量分载 |
+|  |  | Include Shortcut-FE CM | Shortcut-FE CM流量分载(高通芯片版) |
+|  |  | Include BBR CCA | BBR拥塞控制算法提升TCP网络性能 |
+|  |  | Include Pdnsd | DNS防污染 Pdnsd |
+|  |  | Include DNSForwarder | DNS防污染 Forwarder |
+|  |  | Include DNSProxy | DNS防污染 Proxy |
 |  |  | 其余见表2 |  |
 |  |  | <span style="color: #FF0000;">**luci-app-samba与luci-app-samba4不共存**</span> |  |
 |  | Themes | 省略 |  |

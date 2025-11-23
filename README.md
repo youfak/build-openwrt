@@ -2,13 +2,14 @@
 
 ## 固件来源：
 
-- **KEDE源码**：[源码]( https://github.com/coolsnowwolf/lede)
+- **ImmortalWrt 源码**：[源码](https://github.com/immortalwrt/immortalwrt)
 - **P3TERX 云编译脚本**：[P3TERX 云编译脚本](https://github.com/P3TERX/Actions-OpenWrt)
 
 ## 插件来源：
 
 - **LuCI 主题**：[luci-theme-argon](https://github.com/jerrykuku/luci-theme-argon.git)
-- **第三方插件源**：[kenzok8插件源](https://github.com/kenzok8/openwrt-packages)
+- **TurboACC 加速**：[TurboACC](https://github.com/chenmozhijin/turboacc) - 包含 Shortcut-FE、nft-fullcone 等加速组件
+- **OpenClash**：[OpenClash](https://github.com/vernesong/OpenClash)
 
 由衷感谢所有为 OpenWrt 无私奉献的开发者们。
 
@@ -26,11 +27,14 @@
 - **6.1** -  稳定版本
 
 ### 特性：
-- ✅ 基于LEDE版本
+- ✅ 基于 ImmortalWrt 源码（OpenWrt 23.05）
 - ✅ 支持 IPv6
-- ✅ 包含常用第三方插件（通过 feeds 添加）
+- ✅ 集成 TurboACC 网络加速（Flow Offload + Shortcut-FE）
+- ✅ 集成 nft-fullcone NAT 加速
+- ✅ 包含常用第三方插件（OpenClash、iStore 等）
 - ✅ 软件包可用空间约 800MB+
 - ✅ 自动检查源码更新并触发编译
+- ✅ 默认时区：Asia/Shanghai (CST-8)
 
 > `管理ip：192.168.99.1 密码：为空`
 
