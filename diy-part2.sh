@@ -112,10 +112,38 @@ if [[ -f "$FILE_CONFIG_GENERATE" ]]; then
     if grep -q "set system.@system\[-1\].hostname=" "$FILE_CONFIG_GENERATE"; then
         # 替换任意已有默认（包括 ImmortalWrt 或以前的自定义）
         safe_sed "$FILE_CONFIG_GENERATE" "s/set system.@system\\[-1\\]\\.hostname='[^']*'/set system.@system[-1].hostname='${TARGET_HOSTNAME}'/g" "已将 config_generate 中默认主机名改为：${TARGET_HOSTNAME}"
+        
     else
         log_warn "config_generate 未找到 hostname 设置，跳过主机名修改"
     fi
 fi
+
+# ============================================================
+# 2.1 自动修改默认时区（CST-8 & Asia/Shanghai）
+# ============================================================
+if [[ -f "$FILE_CONFIG_GENERATE" ]]; then
+    # 修改 timezone 默认值
+    if grep -q "set system.@system\\[-1\\]\\.timezone=" "$FILE_CONFIG_GENERATE"; then
+        safe_sed "$FILE_CONFIG_GENERATE" \
+            "s/set system.@system\\[-1\\]\\.timezone='[^']*'/set system.@system[-1].timezone='CST-8'/g" \
+            "已将默认 timezone 修改为 CST-8"
+    else
+        log_warn "config_generate 中找不到 timezone 配置，可能版本不同，未修改"
+    fi
+
+    # 修改 zonename 默认值
+    if grep -q "set system.@system\\[-1\\]\\.zonename=" "$FILE_CONFIG_GENERATE"; then
+        safe_sed "$FILE_CONFIG_GENERATE" \
+            "s/set system.@system\\[-1\\]\\.zonename='[^']*'/set system.@system[-1].zonename='Asia\\/Shanghai'/g" \
+            "已将默认 zonename 修改为 Asia/Shanghai"
+    else
+        # 如果不存在，则追加
+        safe_sed "$FILE_CONFIG_GENERATE" \
+            "/set system.@system\\[-1\\]\\.timezone=.*/a\\\tset system.@system[-1].zonename='Asia/Shanghai'" \
+            "已追加默认 zonename=Asia/Shanghai"
+    fi
+fi
+
 
 # ============================================================
 # 3. 在 include/version.mk 或 .config 中设置发行名（VERSION_DIST）
