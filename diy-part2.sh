@@ -113,7 +113,7 @@ fi
 BUILD_DATE=$(TZ=UTC-8 date "+%Y.%m.%d")
 
 if [ -f "$PASS_FILE" ]; then
-    sed -i "s/OpenWrt /Child build ${BUILD_DATE} @ OpenWrt /g" "$PASS_FILE" \
+    sed -i "s/OpenWrt /Youfak build ${BUILD_DATE} @ OpenWrt /g" "$PASS_FILE" \
         && log_info "版本号构建信息已更新" \
         || log_warn "版本号替换失败"
 fi
@@ -133,13 +133,13 @@ if [ -f "$SYSCTL_FILE" ]; then
 fi
 
 # ============================================================
-# 6. 设置 Argon 为默认主题
+# 6. 设置 Argone 为默认主题
 # ============================================================
 LUCIMK="./feeds/luci/collections/luci/Makefile"
 
 if [ -f "$LUCIMK" ]; then
-    sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' "$LUCIMK"
-    log_info "默认主题已切换为 Argon"
+    sed -i 's/luci-theme-bootstrap/luci-theme-argone/g' "$LUCIMK"
+    log_info "默认主题已切换为 Argone"
 else
     log_warn "未找到 luci Makefile，跳过主题设置"
 fi
