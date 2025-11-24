@@ -12,8 +12,8 @@ on:
   #   - cron: 0 22 */3 * *
 
 env:
-  REPO_URL: https://github.com/coolsnowwolf/lede
-  REPO_BRANCH: master
+  REPO_URL: https://github.com/immortalwrt/immortalwrt
+  REPO_BRANCH: openwrt-24.10
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: configs/6.6.config
   DIY_P1_SH: diy6.sh
@@ -263,7 +263,7 @@ jobs:
           echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
           touch release.txt
           echo "功能介绍：含定时重拨、openclash、iStore、广告屏蔽大师 Plus+等少量插件。" >> release.txt
-          echo "[固件源码](https://github.com/immortalwrt/immortalwrt/tree/master)" >> release.txt
+          echo "[固件源码](${{ env.REPO_URL }})" >> release.txt
           echo "由衷感谢所有为openwrt无私奉献的大佬们" >> release.txt
           echo "📥 固件下载" >> release.txt
           [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt

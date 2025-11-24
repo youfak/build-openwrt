@@ -118,13 +118,13 @@ else
 fi
 
 
-log_info "下载自定义主题..."
-if [ -d "package/luci-theme-argon" ]; then
-    log_warn "自定义主题目录已存在，跳过下载"
-else
-    git clone https://github.com/jerrykuku/luci-theme-argon.git  package/luci-theme-argon
-    log_info "自定义主题下载完成"
-fi
+# log_info "下载自定义主题..."
+# if [ -d "package/luci-theme-argon" ]; then
+#     log_warn "自定义主题目录已存在，跳过下载"
+# else
+#     git clone https://github.com/jerrykuku/luci-theme-argon.git  package/luci-theme-argon
+#     log_info "自定义主题下载完成"
+# fi
 
 # # 添加 TurboACC (SFE加速)
 # log_info "添加 TurboACC (SFE加速)..."
@@ -138,12 +138,12 @@ fi
 #     log_info "TurboACC 脚本下载完成"
 # fi
 
-if [ -f "add_turboacc.sh" ]; then
-    chmod +x add_turboacc.sh
-    bash add_turboacc.sh || {
-        log_warn "TurboACC 安装失败，继续执行..."
-    }
-    log_info "TurboACC 安装完成"
-fi
+# if [ -f "add_turboacc.sh" ]; then
+#     chmod +x add_turboacc.sh
+#     bash add_turboacc.sh || {
+#         log_warn "TurboACC 安装失败，继续执行..."
+#     }
+#     log_info "TurboACC 安装完成"
+# fi
 
 log_info "DIY 脚本 part 1 执行完成！"
