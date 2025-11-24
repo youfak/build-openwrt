@@ -86,8 +86,8 @@ fi
 log_info "配置 feed 源..."
 if check_file feeds.conf.default; then
     # 第三方源
-    add_feeds "small" "https://github.com/kenzok8/small"
-    add_feeds "kenzo" "https://github.com/kenzok8/openwrt-packages"
+    # add_feeds "small" "https://github.com/kenzok8/small"
+    # add_feeds "kenzo" "https://github.com/kenzok8/openwrt-packages"
     
 else
     log_error "feeds.conf.default 文件不存在"
