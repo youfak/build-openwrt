@@ -133,13 +133,13 @@ if [ -f "$SYSCTL_FILE" ]; then
 fi
 
 # ============================================================
-# 6. 设置 Argone 为默认主题
+# 6. 设置 Argon 为默认主题
 # ============================================================
 LUCIMK="./feeds/luci/collections/luci/Makefile"
 
 if [ -f "$LUCIMK" ]; then
-    sed -i 's/luci-theme-bootstrap/luci-theme-argone/g' "$LUCIMK"
-    log_info "默认主题已切换为 Argone"
+    sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' "$LUCIMK"
+    log_info "默认主题已切换为 Argon"
 else
     log_warn "未找到 luci Makefile，跳过主题设置"
 fi

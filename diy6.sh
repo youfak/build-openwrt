@@ -126,17 +126,17 @@ else
     log_info "自定义主题下载完成"
 fi
 
-# 添加 TurboACC (SFE加速)
-log_info "添加 TurboACC (SFE加速)..."
-if [ -f "add_turboacc.sh" ]; then
-    log_warn "TurboACC 脚本已存在，跳过下载"
-else
-    curl -sSL https://raw.githubusercontent.com/chenmozhijin/turboacc/luci/add_turboacc.sh -o add_turboacc.sh || {
-        log_error "TurboACC 脚本下载失败"
-        exit 1
-    }
-    log_info "TurboACC 脚本下载完成"
-fi
+# # 添加 TurboACC (SFE加速)
+# log_info "添加 TurboACC (SFE加速)..."
+# if [ -f "add_turboacc.sh" ]; then
+#     log_warn "TurboACC 脚本已存在，跳过下载"
+# else
+#     curl -sSL https://raw.githubusercontent.com/chenmozhijin/turboacc/luci/add_turboacc.sh -o add_turboacc.sh || {
+#         log_error "TurboACC 脚本下载失败"
+#         exit 1
+#     }
+#     log_info "TurboACC 脚本下载完成"
+# fi
 
 if [ -f "add_turboacc.sh" ]; then
     chmod +x add_turboacc.sh
