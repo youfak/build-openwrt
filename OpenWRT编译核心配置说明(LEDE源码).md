@@ -1,5 +1,11 @@
 # OpenWRT 编译 make menuconfig 配置及 LUCI 插件说明
 
+**源码说明：** 本项目使用 Lean's LEDE 源码
+
+- **源码地址**：https://github.com/coolsnowwolf/lede
+- **分支**：master
+- **说明**：Lean's LEDE 是基于 OpenWrt 的优秀分支，包含丰富的中文插件和优化
+
 *本文档由 OpenWRT编译make menuconfig配置及LUCI插件说明.xlsx 自动转换生成*
 
 ---

@@ -1,8 +1,8 @@
-# OpenWrt 23.05 X86-64 云编译项目
+# OpenWrt X86-64 云编译项目
 
 ## 固件来源：
 
-- **ImmortalWrt 源码**：[源码](https://github.com/immortalwrt/immortalwrt)
+- **Lean's LEDE 源码**：[源码](https://github.com/coolsnowwolf/lede)
 - **P3TERX 云编译脚本**：[P3TERX 云编译脚本](https://github.com/P3TERX/Actions-OpenWrt)
 
 ## 插件来源：
@@ -21,13 +21,12 @@
 
 ## 固件说明：
 
-基于 **OpenWrt 23.05** 官方稳定版本编译，内核版本支持：
-- **5.10** - 稳定版本
-- **5.15** - 稳定版本  
-- **6.1** -  稳定版本
+基于 **Lean's LEDE 源码**编译，内核版本支持：
+- **5.15** - 稳定版本（基于 master 分支）
+- **6.6** - 最新版本（基于 master 分支）
 
 ### 特性：
-- ✅ 基于 ImmortalWrt 源码（OpenWrt 23.05）
+- ✅ 基于 Lean's LEDE 源码（包含丰富的中文插件和优化）
 - ✅ 支持 IPv6
 - ✅ 集成 TurboACC 网络加速（Flow Offload + Shortcut-FE）
 - ✅ 集成 nft-fullcone NAT 加速

@@ -84,44 +84,38 @@ else
 fi
 
 # ============================================================
-# 1.1. 修改时区配置
+# 2. 默认密码为空
 # ============================================================
-if [ -f "$FILE_IP" ]; then
-    # 查找并修改 timezone 配置（通常在 315 行附近）
-    # 匹配各种可能的格式：timezone='UTC' 或 timezone="UTC" 等
-    if grep -qE "set system\.@system\[-1\]\.timezone=" "$FILE_IP"; then
-        # 如果已存在 timezone 配置，则替换
-        sed -i "s|set system\.@system\[-1\]\.timezone=.*|set system.@system[-1].timezone='CST-8'|g" "$FILE_IP"
-        log_info "时区已修改为 CST-8"
-    else
-        # 如果不存在，查找 system 配置区域并在合适位置添加
-        # 查找包含 system.@system[-1] 的配置行，在其后添加时区设置
-        TIMEZONE_LINE=$(grep -n "set system\.@system\[-1\]" "$FILE_IP" | tail -1 | cut -d: -f1)
-        if [ -n "$TIMEZONE_LINE" ]; then
-            # 在找到的行后插入时区配置（使用 sed 的 a 命令，保持原有缩进格式）
-            sed -i "${TIMEZONE_LINE}a\		set system.@system[-1].timezone='CST-8'" "$FILE_IP"
-            log_info "时区配置已添加为 CST-8"
-        else
-            log_warn "未找到 system 配置区域，跳过时区配置"
-        fi
-    fi
-    
-    # 添加或修改 zonename 配置
-    if grep -qE "set system\.@system\[-1\]\.zonename=" "$FILE_IP"; then
-        sed -i "s|set system\.@system\[-1\]\.zonename=.*|set system.@system[-1].zonename='Asia/Shanghai'|g" "$FILE_IP"
-        log_info "时区名称已修改为 Asia/Shanghai"
-    else
-        # 在 timezone 配置后添加 zonename
-        ZONENAME_LINE=$(grep -n "set system\.@system\[-1\]\.timezone=" "$FILE_IP" | tail -1 | cut -d: -f1)
-        if [ -n "$ZONENAME_LINE" ]; then
-            sed -i "${ZONENAME_LINE}a\		set system.@system[-1].zonename='Asia/Shanghai'" "$FILE_IP"
-            log_info "时区名称已添加为 Asia/Shanghai"
-        else
-            log_warn "未找到 timezone 配置，跳过 zonename 配置"
-        fi
-    fi
+PASS_FILE="package/lean/default-settings/files/zzz-default-settings"
+
+if [ -f "$PASS_FILE" ]; then
+    sed -i "s@.*CYXluq4wUazHjmCDBCqXF*@#&@" "$PASS_FILE"
+    log_info "默认密码已设置为空"
 else
-    log_warn "未找到 config_generate，跳过时区修改"
+    log_warn "找不到默认设置文件，跳过密码设置"
+fi
+
+# ============================================================
+# 3. 修改主机名
+# ============================================================
+if [ -f "$PASS_FILE" ]; then
+    if ! grep -q "uci set system.@system\[0\].hostname='OpenWrt'" "$PASS_FILE"; then
+        sed -i "/uci commit system/i\uci set system.@system[0].hostname='OpenWrt'" "$PASS_FILE"
+        log_info "主机名已设置为 OpenWrt"
+    else
+        log_warn "主机名已存在配置，跳过"
+    fi
+fi
+
+# ============================================================
+# 4. Kernel Version 显示构建日期
+# ============================================================
+BUILD_DATE=$(TZ=UTC-8 date "+%Y.%m.%d")
+
+if [ -f "$PASS_FILE" ]; then
+    sed -i "s/OpenWrt /Child build ${BUILD_DATE} @ OpenWrt /g" "$PASS_FILE" \
+        && log_info "版本号构建信息已更新" \
+        || log_warn "版本号替换失败"
 fi
 
 # ============================================================
@@ -180,3 +174,114 @@ fi
 # ============================================================
 log_info "DIY 脚本 part 2 执行完成！"
 exit 0
+
+# ============================================================
+# 可选扩展（保留）
+# ============================================================
+# 删除自带 adguardhome
+# rm -rf ./feeds/packages/net/adguardhome
+# rm -rf ./package/feeds/kenzo/luci-app-adguardhome
+
+# 添加指定 adguardhome
+# svn co https://github.com/kiddin9/openwrt-packages/trunk/adguardhome feeds/packages/net/adguardhome
+# svn co https://github.com/kiddin9/openwrt-packages/trunk/luci-app-adguardhome package/feeds/kenzo/luci-app-adguardhome
+
+# #!/bin/bash
+# # ======================================
+# # OpenWrt DIY Part 2
+# # (执行于 feeds update/install 后)
+# # 自定义界面、版本号、固件名优化
+# # ======================================
+
+# echo ">>> 正在执行 diy-part2.sh ..."
+
+# # -------------------------------
+# # 1. 修改默认主题为 Argon
+# # -------------------------------
+# echo ">>> 设置默认主题为 Argon"
+# sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
+
+# # 删除默认主题（可选）
+# rm -rf package/lean/luci-theme-bootstrap
+
+# # -------------------------------
+# # 2. 修改主题背景（可选）
+# # -------------------------------
+# # cp -f files/bg.jpg package/lean/luci-theme-argon/htdocs/luci-static/argon/img/bg.jpg
+
+# # -------------------------------
+# # 3. 修改默认 IP / 主机名
+# # -------------------------------
+# echo ">>> 修改默认 IP / 主机名"
+# sed -i 's/192.168.1.1/192.168.10.1/g' package/base-files/files/bin/config_generate
+# sed -i 's/hostname='OpenWrt'/hostname='MyRouter'/g' package/base-files/files/bin/config_generate
+
+# # -------------------------------
+# # 4. 修改版本号（加入构建时间）
+# # -------------------------------
+# echo ">>> 替换版本号信息"
+
+# ver_date=$(date +"%Y.%m.%d")
+# build_user="Compiled by YOURNAME"
+# sed -i "s/OpenWrt/OpenWrt $ver_date ($build_user)/g" package/base-files/files/etc/openwrt_release
+
+# # immortalWrt Lean 支持格式
+# sed -i "s/DISTRIB_DESCRIPTION='*'/DISTRIB_DESCRIPTION='OpenWrt $ver_date by YOURNAME'/g" \
+#     package/base-files/files/etc/openwrt_release 2>/dev/null
+
+# # -------------------------------
+# # 5. 精简默认插件（可选）
+# # -------------------------------
+# echo ">>> 移除自带但无用 LuCI 插件"
+# rm -rf feeds/luci/applications/luci-app-upnp
+# rm -rf feeds/luci/applications/luci-app-firewall
+
+# # -------------------------------
+# # 6. 添加自定义 LuCI 应用（可选）
+# # -------------------------------
+# echo ">>> 添加常用自定义 LuCI 插件"
+# git clone https://github.com/jerrykuku/luci-app-argon-config package/luci-app-argon-config
+
+# # -------------------------------
+# # 7. 固件命名美化
+# # -------------------------------
+# echo ">>> 固件名美化设置"
+
+# # 在 include/image.mk 中自动加入日期
+# sed -i "s/IMAGE_SUFFIX:=/IMAGE_SUFFIX:=-${ver_date}-KERNEL/g" include/image.mk
+
+# # -------------------------------
+# # 8. 编译优化（拉满 Performance）
+# # -------------------------------
+# echo ">>> 性能优化（内核 + 系统）"
+
+# # 内核编译优化
+# sed -i "/CONFIG_KERNEL_BUILD_USER=/c\CONFIG_KERNEL_BUILD_USER=\"YOURNAME\"" .config 2>/dev/null
+# sed -i "/CONFIG_KERNEL_BUILD_DOMAIN=/c\CONFIG_KERNEL_BUILD_DOMAIN=\"GitHub\"" .config 2>/dev/null
+
+# # GCC 优化
+# echo "
+# # OpenWrt 优化参数
+# export CC='gcc -O3'
+# export CXX='g++ -O3'
+# " >> ~/.bashrc
+
+# # -------------------------------
+# # 9. 系统运行优化（sysctl）
+# # -------------------------------
+# echo ">>> 添加系统 sysctl 优化"
+# mkdir -p files/etc/sysctl.d
+# cat > files/etc/sysctl.d/99-custom.conf <<EOF
+# net.core.default_qdisc=fq
+# net.ipv4.tcp_congestion_control=bbr
+# net.ipv4.tcp_fastopen=3
+# fs.file-max=1024000
+# EOF
+
+# # -------------------------------
+# # 10. 删除多余默认仓库（可选）
+# # -------------------------------
+# echo ">>> 清理无用目录（可选）"
+# rm -rf package/feeds/packages/luci-app-dockerman
+
+# echo ">>> diy-part2.sh 执行完毕!"
