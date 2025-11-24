@@ -104,6 +104,9 @@ log_info "Feed 源配置完成"
 #     log_info "自定义主题下载完成"
 # fi
 
+# cat feeds.conf.default
+cat feeds.conf.default
+
 # 添加 TurboACC (SFE加速)
 log_info "添加 TurboACC (SFE加速)..."
 if [ -f "add_turboacc.sh" ]; then
