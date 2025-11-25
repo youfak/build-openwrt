@@ -12,6 +12,8 @@ TARGET_HOSTNAME=${TARGET_HOSTNAME:-"YOUFAK"}
 TARGET_DIST=${TARGET_DIST:-"YOUFAK"}
 TARGET_LAN_IP=${TARGET_LAN_IP:-"192.168.99.1"}
 DEFAULT_THEME=${DEFAULT_THEME:-"luci-theme-argon"}
+TARGET_HOSTNAME="${TARGET_HOSTNAME:-OpenWrt}"
+BUILD_DATE=$(TZ=UTC-8 date "+%Y.%m.%d")
 
 # -----------------------------
 # 彩色日志输出
@@ -111,7 +113,8 @@ fi
 # ============================================================
 BUILD_DATE=$(TZ=UTC-8 date "+%Y.%m.%d")
 safe_sed "$ZZZ" \
-    "s/OpenWrt /${TARGET_HOSTNAME} build ${BUILD_DATE} @ OpenWrt /" \
+    "s/OpenWrt /${TARGET_HOSTNAME} build ${BUILD_DATE} @ ${TARGET_DIST} /" \
+    "s/LEDE /${TARGET_DIST} build ${BUILD_DATE} @ ${TARGET_HOSTNAME} /" \
     "版本号已加入 build 信息"
 
 # ============================================================
