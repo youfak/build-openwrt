@@ -84,6 +84,7 @@ fi
 # 配置 feeds
 log_info "配置 feed 源..."
 if check_file feeds.conf.default; then
+    log_info "开始配置第三方源"
     # 第三方源
     # add_feeds "small" "https://github.com/kenzok8/small"
     # add_feeds "kenzo" "https://github.com/kenzok8/openwrt-packages"
