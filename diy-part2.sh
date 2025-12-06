@@ -112,10 +112,16 @@ fi
 # 5. 版本号添加构建信息
 # ============================================================
 BUILD_DATE=$(TZ=UTC-8 date "+%Y.%m.%d")
+# 修改 DISTRIB_REVISION 输出逻辑
 safe_sed "$ZZZ" \
-    "s/OpenWrt /${TARGET_HOSTNAME} build ${BUILD_DATE} @ ${TARGET_DIST} /" \
-    "s/LEDE /${TARGET_DIST} build ${BUILD_DATE} @ ${TARGET_HOSTNAME} /" \
-    "版本号已加入 build 信息"
+    "s#echo \"DISTRIB_REVISION=.*#echo \"DISTRIB_REVISION='${BUILD_DATE}'\" >> /etc/openwrt_release#" \
+    "DISTRIB_REVISION 已替换为 ${BUILD_DATE}"
+
+# 修改 DISTRIB_DESCRIPTION 输出逻辑
+safe_sed "$ZZZ" \
+    "s#echo \"DISTRIB_DESCRIPTION=.*#echo \"DISTRIB_DESCRIPTION='YOUFAK build ${BUILD_DATE} @ LEDE'\" >> /etc/openwrt_release#" \
+    "DISTRIB_DESCRIPTION 已设置为 YOUFAK build ${BUILD_DATE} @ LEDE"
+
 
 # ============================================================
 # 6. sysctl 性能优化
