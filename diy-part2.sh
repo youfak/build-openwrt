@@ -152,10 +152,11 @@ fi
 # ============================================================
 # 7. 默认主题
 # ============================================================
-LUCIMK="feeds/luci/collections/luci/Makefile"
+#更换lede源码中自带argon主题
+LUCIMK="./feeds/luci/collections/luci/Makefile"
 if [[ -f "$LUCIMK" ]]; then
     safe_sed "$LUCIMK" \
-        "s/luci-theme-[a-zA-Z0-9_-]\+/${DEFAULT_THEME}/g" \
+        "s/luci-theme-bootstrap/${DEFAULT_THEME}/g" \
         "默认主题替换为 ${DEFAULT_THEME}"
 fi
 
